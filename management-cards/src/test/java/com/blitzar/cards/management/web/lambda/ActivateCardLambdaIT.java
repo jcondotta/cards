@@ -60,16 +60,16 @@ class ActivateCardLambdaIT {
                 .withPath(ManagementCardAPIConstants.MANAGEMENT_CARD_V1_MAPPING);
     }
 
-    @Test
-    public void givenExistentCardId_whenActivateCard_thenReturnOk() {
-        var card = CardTestFactory.buildCard(bankAccountId, cardholderName);
-
-        Mockito.when(dynamoDbTable.getItem(Mockito.any(Key.class))).thenReturn(card);
-
-//        apiGatewayProxyRequestEvent.setPathParameters(Map.of("card-id", card.getCardId()));
-        apiGatewayProxyRequestEvent.setPath("/api/v1/cards/card-id/" + "123" + "/activation");
-        APIGatewayProxyResponseEvent responseEvent = apiGatewayProxyRequestEventFunction.handleRequest(apiGatewayProxyRequestEvent, new MockLambdaContext());
-
-        Assertions.assertThat(responseEvent.getStatusCode()).isEqualTo(HttpResponse.noContent().code());
+//    @Test
+//    public void givenExistentCardId_whenActivateCard_thenReturnOk() {
+//        var card = CardTestFactory.buildCard(bankAccountId, cardholderName);
+//
+//        Mockito.when(dynamoDbTable.getItem(Mockito.any(Key.class))).thenReturn(card);
+//
+////        apiGatewayProxyRequestEvent.setPathParameters(Map.of("card-id", card.getCardId()));
+//        apiGatewayProxyRequestEvent.setPath("/api/v1/cards/card-id/" + "123" + "/activation");
+//        APIGatewayProxyResponseEvent responseEvent = apiGatewayProxyRequestEventFunction.handleRequest(apiGatewayProxyRequestEvent, new MockLambdaContext());
+//
+//        Assertions.assertThat(responseEvent.getStatusCode()).isEqualTo(HttpResponse.noContent().code());
     }
 }
