@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  localstack:
+    container_name: localstack-3.5.0-cards
+    image: localstack/localstack:3.5.0
+    ports:
+      - '127.0.0.1:4566:4566'
+    environment:
+      SERVICES: sqs, dynamodb
+      AWS_ACCESS_KEY_ID: devAccessKeyId
+      AWS_SECRET_ACCESS_KEY: devSecretAccessKey
+      AWS_DEFAULT_REGION: us-east-1
+      DEBUG: 1
+      DOCKER_HOST: unix:///var/run/docker.sock
+    volumes:
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - '$PWD/localstack-script.sh:/etc/localstack/init/ready.d/script.sh'  # ready hook
+      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
+
+  dynamodb-admin:
+    image: aaronshaf/dynamodb-admin
+    ports:
+      - "8001:8001"
+    environment:
+      DYNAMO_ENDPOINT: "http://localstack:4566"
+      AWS_REGION: us-east-1
+      AWS_ACCESS_KEY_ID: devAccessKeyId
+      AWS_SECRET_ACCESS_KEY: devSecretAccessKey
+    depends_on:
+      - localstack

@@ -1,0 +1,20 @@
+schema {
+    query: Query
+}
+
+type Query {
+    cards(bankAccountId: ID): [CardDTO]
+    card(cardId: ID): CardDTO
+}
+
+type CardDTO {
+    bankAccountId: String
+    cardId: String
+    cardholderName: String
+    cardNumber: String
+    cardStatus: String
+    dailyWithdrawalLimit: Int
+    dailyPaymentLimit: Int
+    createdAt: String
+    expirationDate: String
+}
