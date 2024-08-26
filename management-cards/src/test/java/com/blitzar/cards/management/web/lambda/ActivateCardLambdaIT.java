@@ -71,5 +71,5 @@ class ActivateCardLambdaIT {
 //        APIGatewayProxyResponseEvent responseEvent = apiGatewayProxyRequestEventFunction.handleRequest(apiGatewayProxyRequestEvent, new MockLambdaContext());
 //
 //        Assertions.assertThat(responseEvent.getStatusCode()).isEqualTo(HttpResponse.noContent().code());
-    }
+//    }
 }
