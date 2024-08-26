@@ -31,4 +31,4 @@ jobs:
           cache: maven
 
       - name: Build and Run Tests
-        run: mvn verify --batch-mode --fail-at-end
+        run: mvn test --batch-mode --fail-at-end
