@@ -4,7 +4,7 @@ import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 
-public class TestValidatorBuilder {
+public class ValidatorTestBuilder {
 
     public static Validator getValidator(){
         return Validation.byDefaultProvider()

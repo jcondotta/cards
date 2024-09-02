@@ -1,20 +1,18 @@
 package com.blitzar.cards.application.web.events;
 
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
-import com.blitzar.cards.application.AddCardsApplication;
 import com.blitzar.cards.application.LocalStackTestContainer;
 import com.blitzar.cards.domain.Card;
-import com.blitzar.cards.exception.ResourceNotFoundException;
 import com.blitzar.cards.web.events.request.AddCardRequest;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.json.JsonMapper;
-import io.micronaut.serde.annotation.SerdeImport;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
-import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
-import jakarta.inject.Named;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.services.sqs.SqsClient;
 
@@ -23,12 +21,9 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Collections;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertThrowsExactly;
-import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @MicronautTest
@@ -59,10 +54,18 @@ class CardApplicationEventHandlerIT implements LocalStackTestContainer {
     private String bankAccountId = "998372";
     private String cardholderName = "Jefferson Condotta";
 
-    @PostConstruct
-    protected void init(){
+    @BeforeAll
+    protected void beforeAll(){
         this.cardApplicationEventHandler = new CardApplicationEventHandler(applicationContext);
         this.cardApplicationQueueURL = sqsClient.getQueueUrl(builder -> builder.queueName(cardApplicationQueueName).build()).queueUrl();
+    }
+
+    @AfterAll
+    protected void afterAll(){
+        dynamoDbTable.scan()
+                .items()
+                .stream()
+                .forEach(card -> dynamoDbTable.deleteItem(card));
     }
 
     @Test

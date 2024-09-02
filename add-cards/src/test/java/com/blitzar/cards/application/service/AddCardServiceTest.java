@@ -1,9 +1,9 @@
 package com.blitzar.cards.application.service;
 
-import com.blitzar.cards.application.InvalidStringArgumentProvider;
-import com.blitzar.cards.application.TestValidatorBuilder;
-import com.blitzar.cards.application.factory.ClockTestFactory;
+import com.blitzar.cards.application.ValidatorTestBuilder;
+import com.blitzar.cards.arguments.InvalidStringArgumentProvider;
 import com.blitzar.cards.domain.Card;
+import com.blitzar.cards.factory.ClockTestFactory;
 import com.blitzar.cards.web.events.request.AddCardRequest;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
@@ -41,7 +41,7 @@ class AddCardServiceTest {
     private String cardholderName = "Jefferson Condotta";
 
     private static final Clock CLOCK = ClockTestFactory.testClockFixedInstant;
-    private static final Validator VALIDATOR = TestValidatorBuilder.getValidator();
+    private static final Validator VALIDATOR = ValidatorTestBuilder.getValidator();
 
     @BeforeEach
     public void beforeEach(){
