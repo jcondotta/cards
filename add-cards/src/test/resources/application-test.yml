@@ -1,8 +1,8 @@
-aws:
-  access-key-id: ${AWS_ACCESS_KEY_ID}
-  secret-key: ${AWS_SECRET_ACCESS_KEY}
-  region: ${AWS_DEFAULT_REGION}
-  sqs:
-    endpoint: ${AWS_SQS_ENDPOINT}
-  dynamodb:
-    endpoint: ${AWS_DYNAMODB_ENDPOINT}
+#aws:
+#  access-key-id: ${AWS_ACCESS_KEY_ID}
+#  secret-key: ${AWS_SECRET_ACCESS_KEY}
+#  region: ${AWS_DEFAULT_REGION}
+#  sqs:
+#    endpoint: ${AWS_SQS_ENDPOINT}
+#  dynamodb:
+#    endpoint: ${AWS_DYNAMODB_ENDPOINT}

@@ -15,5 +15,7 @@ aws:
   region: ${AWS_DEFAULT_REGION}
   dynamodb:
     table-name: 'cards'
+    endpoint: ${AWS_DYNAMODB_ENDPOINT:}
   sqs:
     card-application-queue-name: 'card-application'
+    endpoint: ${AWS_SQS_ENDPOINT:}
