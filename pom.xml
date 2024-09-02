@@ -26,7 +26,9 @@
         <maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
         <micronaut-maven-plugin.version>4.6.1</micronaut-maven-plugin.version>
         <maven-failsafe-plugin.version>3.3.0</maven-failsafe-plugin.version>
+        <maven-surefire-plugin.version>3.5.0</maven-surefire-plugin.version>
         <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
+        <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
     </properties>
     <build>
         <pluginManagement>
@@ -38,6 +40,26 @@
                     <configuration>
                         <configFile>aot-${packaging}.properties</configFile>
                     </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${maven-jar-plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>test-jar</goal>
+                            </goals>
+                            <phase>test-compile</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven-surefire-plugin.version}</version>
                 </plugin>
 
                 <plugin>
