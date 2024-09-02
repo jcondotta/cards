@@ -1,6 +1,5 @@
 #!/bin/sh
 
-#echo "Initializing localstack"
 awslocal sqs create-queue --queue-name card-application
 
 awslocal dynamodb create-table \
@@ -9,8 +8,10 @@ awslocal dynamodb create-table \
            AttributeName=cardId,AttributeType=S \
            AttributeName=bankAccountId,AttributeType=S \
    --key-schema AttributeName=cardId,KeyType=HASH \
+   --billing-mode=PROVISIONED \
    --provisioned-throughput ReadCapacityUnits=5,WriteCapacityUnits=5 \
-   --global-secondary-indexes IndexName=bankAccountId-gsi,KeySchema=["{AttributeName=bankAccountId,KeyType=HASH}"],Projection="{ProjectionType=ALL}",ProvisionedThroughput="{ReadCapacityUnits=3,WriteCapacityUnits=3}"
+   --global-secondary-indexes \
+           IndexName=bankAccountId-gsi,KeySchema=["{AttributeName=bankAccountId,KeyType=HASH}"],Projection="{ProjectionType=ALL}",ProvisionedThroughput="{ReadCapacityUnits=3,WriteCapacityUnits=3}"
 
 awslocal dynamodb batch-write-item \
     --request-items \
@@ -48,3 +49,32 @@ awslocal dynamodb batch-write-item \
             }
           ]
         }'
+
+awslocal iam create-role --role-name add-cards-lambda-exec --assume-role-policy-document '{
+    "Version": "2012-10-17",
+    "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": "dynamodb:PutItem",
+                "Resource": "arn:aws:dynamodb:us-east-1:000000000000:table/cards"
+            }
+        ]
+}'
+
+awslocal lambda create-function \
+    --function-name add-cards-java17 \
+    --runtime java17 \
+    --zip-file fileb:///tmp/add-cards-0.1.jar \
+    --handler com.blitzar.cards.application.web.events.CardApplicationEventHandler \
+    --role arn:aws:iam::000000000000:role/add-cards-lambda-exec \
+    --architectures arm64 \
+    --memory-size 1024 \
+    --timeout 2700 \
+    --environment Variables="{AWS_DYNAMODB_ENDPOINT=http://localstack:4566,AWS_SQS_ENDPOINT=http://localstack:4566}"
+
+awslocal lambda create-event-source-mapping \
+    --function-name add-cards-java17 \
+    --batch-size 5 \
+    --maximum-retry-attempts 2 \
+    --maximum-batching-window-in-seconds 1 \
+    --event-source-arn arn:aws:sqs:us-east-1:000000000000:card-application

@@ -2,30 +2,21 @@ version: "3.8"
 
 services:
   localstack:
-    container_name: localstack-3.5.0-cards
-    image: localstack/localstack:3.5.0
+    container_name: "${LOCALSTACK_DOCKER_NAME:-localstack-main}"
+    image: localstack/localstack:3.7.0
     ports:
       - '127.0.0.1:4566:4566'
+      - '127.0.0.1:4510-4513:4510-4513' # External services port range.
     environment:
-      SERVICES: sqs, dynamodb
+      SERVICES: sqs, dynamodb, iam, lambda
       AWS_ACCESS_KEY_ID: devAccessKeyId
       AWS_SECRET_ACCESS_KEY: devSecretAccessKey
       AWS_DEFAULT_REGION: us-east-1
-      DEBUG: 1
+      LS_LOG: ${LS_LOG:-debug}
       DOCKER_HOST: unix:///var/run/docker.sock
     volumes:
-      - '/var/run/docker.sock:/var/run/docker.sock'
       - '$PWD/localstack-script.sh:/etc/localstack/init/ready.d/script.sh'  # ready hook
-      - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
-
-  dynamodb-admin:
-    image: aaronshaf/dynamodb-admin
-    ports:
-      - "8001:8001"
-    environment:
-      DYNAMO_ENDPOINT: "http://localstack:4566"
-      AWS_REGION: us-east-1
-      AWS_ACCESS_KEY_ID: devAccessKeyId
-      AWS_SECRET_ACCESS_KEY: devSecretAccessKey
-    depends_on:
-      - localstack
+      - '${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack'
+      - '/var/run/docker.sock:/var/run/docker.sock'
+      - '$PWD/add-cards/target/add-cards-0.1.jar:/tmp/add-cards-0.1.jar'
+    command: sh -c "chmod 777 -R /tmp"
