@@ -18,12 +18,10 @@ import java.time.LocalDateTime;
 @Factory
 public class DynamoDBTableFactory {
 
-    @Value("${aws.dynamodb.table-name}")
-    String tableName;
-
     @Singleton
     @Requires(property = "aws.dynamodb.table-name")
-    public DynamoDbTable<Card> dynamoDbTable(DynamoDbEnhancedClient dynamoDbEnhancedClient, TableSchema<Card> cardTableSchema){
+    public DynamoDbTable<Card> dynamoDbTable(DynamoDbEnhancedClient dynamoDbEnhancedClient, TableSchema<Card> cardTableSchema,
+                                             @Value("${aws.dynamodb.table-name}") String tableName){
         return dynamoDbEnhancedClient.table(tableName, cardTableSchema);
     }
 

@@ -25,6 +25,7 @@ public class DynamoDBClientFactory {
     @Requires(property = "aws.dynamodb.endpoint", pattern = "^$")
     public DynamoDbClient dynamoDbClient(AwsCredentials awsCredentials, Region region){
         logger.info("Building DynamoDbClient with params: awsCredentials: {} and region: {}", awsCredentials, region);
+
         return DynamoDbClient.builder()
                 .region(region)
                 .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
