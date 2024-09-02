@@ -1,17 +1,13 @@
-package com.blitzar.factory;
+package com.blitzar.cards.factory;
 
-import com.blitzar.ClockFactory;
 import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.web.events.request.AddCardRequest;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 public class CardTestFactory {
-
-    private final static Clock testClockInstance = new ClockFactory().currentInstantUTC();
 
     public static Card buildCard(String cardId, String bankAccountId, String cardholderName){
         var card = new Card();
@@ -22,8 +18,8 @@ public class CardTestFactory {
         card.setCardStatus(AddCardRequest.DEFAULT_CARD_STATUS);
         card.setDailyWithdrawalLimit(AddCardRequest.DEFAULT_DAILY_WITHDRAWAL_LIMIT);
         card.setDailyPaymentLimit(AddCardRequest.DEFAULT_DAILY_PAYMENT_LIMIT);
-        card.setCreatedAt(LocalDateTime.now(testClockInstance));
-        card.setExpirationDate(LocalDateTime.now(testClockInstance)
+        card.setCreatedAt(LocalDateTime.now(ClockTestFactory.testClockFixedInstant));
+        card.setExpirationDate(LocalDateTime.now(ClockTestFactory.testClockFixedInstant)
                 .plus(AddCardRequest.DEFAULT_YEAR_PERIOD_EXPIRATION_DATE, ChronoUnit.YEARS));
 
         return card;

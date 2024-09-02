@@ -1,4 +1,4 @@
-package com.blitzar.cards.application;
+package com.blitzar.cards.arguments;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Named;

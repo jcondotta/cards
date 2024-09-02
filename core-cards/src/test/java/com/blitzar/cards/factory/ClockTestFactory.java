@@ -1,4 +1,4 @@
-package com.blitzar.cards.application.factory;
+package com.blitzar.cards.factory;
 
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Primary;
