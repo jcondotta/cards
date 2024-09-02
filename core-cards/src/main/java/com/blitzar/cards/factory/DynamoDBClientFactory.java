@@ -1,9 +1,9 @@
 package com.blitzar.cards.factory;
 
 import io.micronaut.context.annotation.Factory;
-import io.micronaut.context.annotation.Property;
 import io.micronaut.context.annotation.Replaces;
-import io.micronaut.core.util.StringUtils;
+import io.micronaut.context.annotation.Requires;
+import io.micronaut.context.annotation.Value;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,23 +20,23 @@ public class DynamoDBClientFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(DynamoDBClientFactory.class);
 
-    @Property(name = "aws.dynamodb.endpoint", defaultValue = "")
-    private String endpoint;
+    @Singleton
+    @Replaces(DynamoDbClient.class)
+    @Requires(property = "aws.dynamodb.endpoint", pattern = "^$")
+    public DynamoDbClient dynamoDbClient(AwsCredentials awsCredentials, Region region){
+        logger.info("Building DynamoDbClient with params: awsCredentials: {} and region: {}", awsCredentials, region);
+        return DynamoDbClient.builder()
+                .region(region)
+                .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
+                .build();
+    }
 
     @Singleton
     @Replaces(DynamoDbClient.class)
-//    @Requires(property = "aws.dynamodb.endpoint")
-    public DynamoDbClient dynamoDbClient(AwsCredentials awsCredentials, Region region){
-
-        if(StringUtils.isEmpty(endpoint)){
-            logger.info("Building DynamoDbClient with params: awsCredentials: {} and region: {}", awsCredentials, region);
-            return DynamoDbClient.builder()
-                    .region(region)
-                    .credentialsProvider(EnvironmentVariableCredentialsProvider.create())
-                    .build();
-        }
-
+    @Requires(property = "aws.dynamodb.endpoint", pattern = "(.|\\s)*\\S(.|\\s)*")
+    public DynamoDbClient dynamoDbClientEndpointOverridden(AwsCredentials awsCredentials, Region region, @Value("${aws.sqs.endpoint}") String endpoint){
         logger.info("Building DynamoDbClient with params: awsCredentials: {}, region: {} and endpoint: {}", awsCredentials, region, endpoint);
+
         return DynamoDbClient.builder()
                 .region(region)
                 .endpointOverride(URI.create(endpoint))
