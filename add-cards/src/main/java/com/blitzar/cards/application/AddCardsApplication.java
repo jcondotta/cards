@@ -1,6 +1,7 @@
 package com.blitzar.cards.application;
 
 import com.blitzar.cards.web.events.request.AddCardRequest;
+import io.micronaut.context.env.Environment;
 import io.micronaut.runtime.Micronaut;
 import io.micronaut.serde.annotation.SerdeImport;
 
@@ -8,6 +9,9 @@ import io.micronaut.serde.annotation.SerdeImport;
 public class AddCardsApplication {
 
     public static void main(String[] args) {
-        Micronaut.run(AddCardsApplication.class, args);
+        Micronaut.build(args)
+                .mainClass(AddCardsApplication.class)
+                .defaultEnvironments(Environment.DEVELOPMENT)
+                .start();
     }
 }
