@@ -15,8 +15,9 @@ services:
       LS_LOG: ${LS_LOG:-debug}
       DOCKER_HOST: unix:///var/run/docker.sock
     volumes:
-      - '$PWD/localstack-script.sh:/etc/localstack/init/ready.d/script.sh'  # ready hook
-      - '${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'
-      - '$PWD/add-cards/target/add-cards-0.1.jar:/tmp/add-cards-0.1.jar'
+      - './localstack-scripts:/etc/localstack/init/ready.d/'  # ready hook
+      - '${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack'
+#      - "${TMPDIR:-/tmp}/localstack:/tmp/localstack"
+      - './add-cards/target/add-cards-0.1.jar:/tmp/add-cards-0.1.jar'
     command: sh -c "chmod 777 -R /tmp"
