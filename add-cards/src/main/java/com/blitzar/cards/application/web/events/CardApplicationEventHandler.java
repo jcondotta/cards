@@ -46,11 +46,4 @@ public class CardApplicationEventHandler extends MicronautRequestHandler<SQSEven
 
         return null;
     }
-
-//    @Override
-//    protected ApplicationContextBuilder newApplicationContextBuilder() {
-//        ApplicationContextBuilder builder = super.newApplicationContextBuilder();
-//        builder.eagerInitSingletons(true);
-//        return builder;
-//    }
 }

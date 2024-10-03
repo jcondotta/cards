@@ -1,8 +1,5 @@
 aws:
-  access-key-id: ${AWS_ACCESS_KEY_ID}
-  secret-key: ${AWS_SECRET_ACCESS_KEY}
-  region: ${AWS_DEFAULT_REGION}
-  sqs:
-    endpoint: ${AWS_SQS_ENDPOINT}
   dynamodb:
-    endpoint: ${AWS_DYNAMODB_ENDPOINT}
+    table-name: ${AWS_DYNAMODB_CARDS_TABLE_NAME:cards-test}
+  sqs:
+    card-application-queue-name: ${AWS_SQS_CARD_APPLICATION_QUEUE:card-application-test}

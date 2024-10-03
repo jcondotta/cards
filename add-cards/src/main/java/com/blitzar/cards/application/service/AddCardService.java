@@ -40,7 +40,7 @@ public class AddCardService {
         }
 
         var card = new Card();
-        card.setCardId(UUID.randomUUID().toString());
+        card.setCardId(UUID.randomUUID());
         card.setBankAccountId(request.bankAccountId());
         card.setCardholderName(request.cardholderName());
         card.setCardNumber(UUID.randomUUID().toString());

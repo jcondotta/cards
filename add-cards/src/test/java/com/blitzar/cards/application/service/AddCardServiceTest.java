@@ -1,6 +1,7 @@
 package com.blitzar.cards.application.service;
 
 import com.blitzar.cards.application.ValidatorTestBuilder;
+import com.blitzar.cards.application.helper.TestBankAccount;
 import com.blitzar.cards.arguments.InvalidStringArgumentProvider;
 import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.factory.ClockTestFactory;
@@ -21,6 +22,7 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -37,8 +39,8 @@ class AddCardServiceTest {
     @Mock
     private DynamoDbTable<Card> dynamoDbTable;
 
-    private String bankAccountId = "998372";
-    private String cardholderName = "Jefferson Condotta";
+    private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
+    private static final String CARDHOLDER_JEFFERSON = TestCardholder.JEFFERSON.getCardholderName();
 
     private static final Clock CLOCK = ClockTestFactory.testClockFixedInstant;
     private static final Validator VALIDATOR = ValidatorTestBuilder.getValidator();
@@ -49,8 +51,8 @@ class AddCardServiceTest {
     }
 
     @Test
-    public void givenValidRequest_whenAddCard_thenSaveCard(){
-        var addCardRequest = new AddCardRequest(bankAccountId, cardholderName);
+    public void shouldSaveCard_whenRequestIsValid(){
+        var addCardRequest = new AddCardRequest(BANK_ACCOUNT_ID_BRAZIL, CARDHOLDER_JEFFERSON);
         ArgumentCaptor<Card> cardCaptor = ArgumentCaptor.forClass(Card.class);
 
         addCardService.addCard(addCardRequest);
@@ -59,25 +61,24 @@ class AddCardServiceTest {
         Card card = cardCaptor.getValue();
 
         assertAll(
-            () -> assertThat(card.getCardId()).isNotNull(),
-            () -> assertThat(card.getBankAccountId()).isEqualTo(addCardRequest.bankAccountId()),
-            () -> assertThat(card.getCardholderName()).isEqualTo(addCardRequest.cardholderName()),
-            () -> assertThat(card.getCardNumber()).isNotNull(),
-            () -> assertThat(card.getCardStatus()).isEqualTo(AddCardRequest.DEFAULT_CARD_STATUS),
-            () -> assertThat(card.getDailyWithdrawalLimit()).isEqualTo(AddCardRequest.DEFAULT_DAILY_WITHDRAWAL_LIMIT),
-            () -> assertThat(card.getDailyPaymentLimit()).isEqualTo(AddCardRequest.DEFAULT_DAILY_PAYMENT_LIMIT),
-            () -> assertThat(card.getCreatedAt()).isEqualTo(LocalDateTime.now(CLOCK)),
-            () -> assertThat(card.getExpirationDate()).isEqualTo(LocalDateTime.now(CLOCK)
-                    .plus(AddCardRequest.DEFAULT_YEAR_PERIOD_EXPIRATION_DATE, ChronoUnit.YEARS))
+                () -> assertThat(card.getCardId()).isNotNull(),
+                () -> assertThat(card.getBankAccountId()).isEqualTo(addCardRequest.bankAccountId()),
+                () -> assertThat(card.getCardholderName()).isEqualTo(addCardRequest.cardholderName()),
+                () -> assertThat(card.getCardNumber()).isNotNull(),
+                () -> assertThat(card.getCardStatus()).isEqualTo(AddCardRequest.DEFAULT_CARD_STATUS),
+                () -> assertThat(card.getDailyWithdrawalLimit()).isEqualTo(AddCardRequest.DEFAULT_DAILY_WITHDRAWAL_LIMIT),
+                () -> assertThat(card.getDailyPaymentLimit()).isEqualTo(AddCardRequest.DEFAULT_DAILY_PAYMENT_LIMIT),
+                () -> assertThat(card.getCreatedAt()).isEqualTo(LocalDateTime.now(CLOCK)),
+                () -> assertThat(card.getExpirationDate()).isEqualTo(LocalDateTime.now(CLOCK)
+                        .plus(AddCardRequest.DEFAULT_YEAR_PERIOD_EXPIRATION_DATE, ChronoUnit.YEARS))
         );
 
         verify(dynamoDbTable).putItem(any(Card.class));
     }
 
-    @ParameterizedTest
-    @ArgumentsSource(InvalidStringArgumentProvider.class)
-    public void givenInvalidBankAccountId_whenAddCard_thenThrowException(String invalidBankAccountId){
-        var addCardRequest = new AddCardRequest(invalidBankAccountId, cardholderName);
+    @Test
+    public void shouldThrowConstraintViolationException_whenBankAccountIdIsNull(){
+        var addCardRequest = new AddCardRequest(null, CARDHOLDER_JEFFERSON);
 
         var exception = assertThrowsExactly(ConstraintViolationException.class, () -> addCardService.addCard(addCardRequest));
         assertThat(exception.getConstraintViolations()).hasSize(1);
@@ -87,7 +88,7 @@ class AddCardServiceTest {
                 .orElseThrow();
 
         assertAll(
-                () -> assertThat(violation.getMessage()).isEqualTo("card.bankAccountId.notBlank"),
+                () -> assertThat(violation.getMessage()).isEqualTo("card.bankAccountId.notNull"),
                 () -> assertThat(violation.getPropertyPath().toString()).isEqualTo("bankAccountId")
         );
 
@@ -96,8 +97,8 @@ class AddCardServiceTest {
 
     @ParameterizedTest
     @ArgumentsSource(InvalidStringArgumentProvider.class)
-    public void givenInvalidCardholderName_whenAddCard_thenThrowException(String invalidCardholderName){
-        var addCardRequest = new AddCardRequest(bankAccountId, invalidCardholderName);
+    public void shouldThrowConstraintViolationException_whenCardholderNameIsInvalid(String invalidCardholderName){
+        var addCardRequest = new AddCardRequest(BANK_ACCOUNT_ID_BRAZIL, invalidCardholderName);
 
         var exception = assertThrowsExactly(ConstraintViolationException.class, () -> addCardService.addCard(addCardRequest));
         assertThat(exception.getConstraintViolations()).hasSize(1);
@@ -115,9 +116,9 @@ class AddCardServiceTest {
     }
 
     @Test
-    public void givenCardholderNameLongerThan21Characters_whenAddCard_thenThrowException(){
+    public void shouldThrowConstraintViolationException_whenCardholderNameExceeds21Characters(){
         var invalidCardholderName = RandomStringUtils.randomAlphabetic(22);
-        var addCardRequest = new AddCardRequest(bankAccountId, invalidCardholderName);
+        var addCardRequest = new AddCardRequest(BANK_ACCOUNT_ID_BRAZIL, invalidCardholderName);
 
         var exception = assertThrowsExactly(ConstraintViolationException.class, () -> addCardService.addCard(addCardRequest));
         assertThat(exception.getConstraintViolations()).hasSize(1);
