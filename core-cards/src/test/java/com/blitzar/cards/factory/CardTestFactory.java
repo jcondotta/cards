@@ -2,6 +2,7 @@ package com.blitzar.cards.factory;
 
 import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.web.events.request.AddCardRequest;
+import net.datafaker.Faker;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -9,12 +10,14 @@ import java.util.UUID;
 
 public class CardTestFactory {
 
-    public static Card buildCard(String cardId, String bankAccountId, String cardholderName){
+    public static Card buildCard(UUID cardId, UUID bankAccountId, String cardholderName){
         var card = new Card();
         card.setCardId(cardId);
         card.setBankAccountId(bankAccountId);
         card.setCardholderName(cardholderName);
-        card.setCardNumber(UUID.randomUUID().toString());
+
+        var cardNumber = new Faker().finance().creditCard();
+        card.setCardNumber(cardNumber);
         card.setCardStatus(AddCardRequest.DEFAULT_CARD_STATUS);
         card.setDailyWithdrawalLimit(AddCardRequest.DEFAULT_DAILY_WITHDRAWAL_LIMIT);
         card.setDailyPaymentLimit(AddCardRequest.DEFAULT_DAILY_PAYMENT_LIMIT);
@@ -25,11 +28,11 @@ public class CardTestFactory {
         return card;
     }
 
-    public static Card buildCard(String bankAccountId, String cardholderName){
-        return buildCard(UUID.randomUUID().toString(), bankAccountId, cardholderName);
+    public static Card buildCard(UUID bankAccountId, String cardholderName){
+        return buildCard(UUID.randomUUID(), bankAccountId, cardholderName);
     }
 
     public static Card buildCard(AddCardRequest addCardRequest){
-        return buildCard(UUID.randomUUID().toString(), addCardRequest.bankAccountId(), addCardRequest.cardholderName());
+        return buildCard(UUID.randomUUID(), addCardRequest.bankAccountId(), addCardRequest.cardholderName());
     }
 }
