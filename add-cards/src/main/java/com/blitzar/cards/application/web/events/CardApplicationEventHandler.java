@@ -16,19 +16,18 @@ public class CardApplicationEventHandler extends MicronautRequestHandler<SQSEven
 
     private static final Logger logger = LoggerFactory.getLogger(CardApplicationEventHandler.class);
 
-    private final AddCardService addCardService;
-    private final JsonMapper jsonMapper;
+    @Inject
+    private AddCardService addCardService;
 
     @Inject
-    public CardApplicationEventHandler(AddCardService addCardService, JsonMapper jsonMapper) {
-        this.addCardService = addCardService;
-        this.jsonMapper = jsonMapper;
+    private JsonMapper jsonMapper;
+
+    public CardApplicationEventHandler() {
+        super();
     }
 
     public CardApplicationEventHandler(ApplicationContext applicationContext) {
         super(applicationContext);
-        this.addCardService = applicationContext.getBean(AddCardService.class);
-        this.jsonMapper = applicationContext.getBean(JsonMapper.class);
     }
 
     @Override

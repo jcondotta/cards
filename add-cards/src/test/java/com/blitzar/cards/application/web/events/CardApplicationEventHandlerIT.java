@@ -117,7 +117,7 @@ class CardApplicationEventHandlerIT implements LocalStackTestContainer {
                 .first()
                 .satisfies(violation -> {
                     assertThat(violation.getMessage()).isEqualTo("card.bankAccountId.notNull");
-                    assertThat(violation.getPropertyPath().toString()).isEqualTo("bankAccountId");
+                    assertThat(violation.getPropertyPath()).hasToString("bankAccountId");
                 });
 
         assertNoCardsSaved();
@@ -136,7 +136,7 @@ class CardApplicationEventHandlerIT implements LocalStackTestContainer {
                 .first()
                 .satisfies(violation -> {
                     assertThat(violation.getMessage()).isEqualTo("card.cardholderName.notBlank");
-                    assertThat(violation.getPropertyPath().toString()).isEqualTo("cardholderName");
+                    assertThat(violation.getPropertyPath()).hasToString("cardholderName");
                 });
 
         assertNoCardsSaved();
@@ -173,7 +173,7 @@ class CardApplicationEventHandlerIT implements LocalStackTestContainer {
                 .first()
                 .satisfies(violation -> {
                     assertThat(violation.getMessage()).isEqualTo("card.cardholderName.length.limit");
-                    assertThat(violation.getPropertyPath().toString()).isEqualTo("cardholderName");
+                    assertThat(violation.getPropertyPath()).hasToString("cardholderName");
                 });
 
         assertNoCardsSaved();
