@@ -1,5 +1,0 @@
-aws:
-  dynamodb:
-    table-name: ${AWS_DYNAMODB_CARDS_TABLE_NAME:cards-test}
-  sqs:
-    card-application-queue-name: ${AWS_SQS_CARD_APPLICATION_QUEUE:card-application-test}

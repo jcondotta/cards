@@ -1,11 +1,12 @@
 package com.blitzar.cards.application.web.events;
 
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
-import com.blitzar.cards.application.LocalStackTestContainer;
-import com.blitzar.cards.application.helper.TestBankAccount;
-import com.blitzar.cards.application.service.TestCardholder;
-import com.blitzar.cards.arguments.InvalidStringArgumentProvider;
+import com.blitzar.cards.argument_provider.BlankAndNonPrintableCharactersArgumentProvider;
+import com.blitzar.cards.container.LocalStackTestContainer;
 import com.blitzar.cards.domain.Card;
+import com.blitzar.cards.helper.CardTablePurgeService;
+import com.blitzar.cards.helper.TestBankAccount;
+import com.blitzar.cards.helper.TestCardholder;
 import com.blitzar.cards.web.events.request.AddCardRequest;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.context.annotation.Value;
@@ -13,8 +14,10 @@ import io.micronaut.json.JsonMapper;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -50,6 +53,9 @@ class CardApplicationEventHandlerIT implements LocalStackTestContainer {
     @Inject
     private DynamoDbTable<Card> dynamoDbTable;
 
+    @Inject
+    private CardTablePurgeService cardTablePurgeService;
+
     private CardApplicationEventHandler cardApplicationEventHandler;
 
     @Value("${aws.sqs.card-application-queue-name}")
@@ -61,21 +67,18 @@ class CardApplicationEventHandlerIT implements LocalStackTestContainer {
     private static final String CARDHOLDER_JEFFERSON = TestCardholder.JEFFERSON.getCardholderName();
 
     @BeforeAll
-    protected void beforeAll(){
+    void beforeAll(){
         this.cardApplicationEventHandler = new CardApplicationEventHandler(applicationContext);
         this.cardApplicationQueueURL = sqsClient.getQueueUrl(builder -> builder.queueName(cardApplicationQueueName).build()).queueUrl();
     }
 
     @AfterEach
-    protected void afterEach(){
-        dynamoDbTable.scan()
-                .items()
-                .stream()
-                .forEach(card -> dynamoDbTable.deleteItem(card));
+    void afterEach(){
+        cardTablePurgeService.purgeTable();
     }
 
     @Test
-    public void shouldProcessCardSuccessfully_whenValidSQSEventReceived() throws IOException {
+    void shouldProcessCardSuccessfully_whenValidSQSEventReceived() throws IOException {
         var addCardRequest = new AddCardRequest(BANK_ACCOUNT_ID_BRAZIL, CARDHOLDER_JEFFERSON);
         SQSEvent sqsEvent = createSQSEvent(addCardRequest);
 
@@ -103,7 +106,7 @@ class CardApplicationEventHandlerIT implements LocalStackTestContainer {
     }
 
     @Test
-    public void shouldThrowConstraintViolationException_whenBankAccountIdIsNullInSQSEvent() throws IOException {
+    void shouldThrowConstraintViolationException_whenBankAccountIdIsNullInSQSEvent() throws IOException {
         var addCardRequest = new AddCardRequest(null, CARDHOLDER_JEFFERSON);
         var sqsEvent = createSQSEvent(addCardRequest);
 
@@ -121,8 +124,8 @@ class CardApplicationEventHandlerIT implements LocalStackTestContainer {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(InvalidStringArgumentProvider.class)
-    public void shouldThrowConstraintViolationException_whenCardholderNameIsInvalid(String invalidCardholderName) throws IOException {
+    @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
+    void shouldThrowConstraintViolationException_whenCardholderNameIsBlank(String invalidCardholderName) throws IOException {
         var addCardRequest = new AddCardRequest(BANK_ACCOUNT_ID_BRAZIL, invalidCardholderName);
         var sqsEvent = createSQSEvent(addCardRequest);
 
@@ -139,8 +142,27 @@ class CardApplicationEventHandlerIT implements LocalStackTestContainer {
         assertNoCardsSaved();
     }
 
+//    @ParameterizedTest
+//    @ArgumentsSource(ThreatInputArgumentProvider.class)
+//    void shouldThrowConstraintViolationException_whenCardholderNameIsMalicious(String invalidCardholderName) throws IOException {
+//        var addCardRequest = new AddCardRequest(BANK_ACCOUNT_ID_BRAZIL, invalidCardholderName);
+//        var sqsEvent = createSQSEvent(addCardRequest);
+//
+//        var exception = assertThrows(ConstraintViolationException.class, () -> cardApplicationEventHandler.execute(sqsEvent));
+//
+//        assertThat(exception.getConstraintViolations())
+//                .hasSize(1)
+//                .first()
+//                .satisfies(violation -> {
+//                    assertThat(violation.getMessage()).isEqualTo("card.cardholderName.invalid");
+//                    assertThat(violation.getPropertyPath().toString()).isEqualTo("cardholderName");
+//                });
+//
+//        assertNoCardsSaved();
+//    }
+
     @Test
-    public void shouldThrowConstraintViolationException_whenCardholderNameExceeds21CharactersInSQSEvent() throws IOException {
+    void shouldThrowConstraintViolationException_whenCardholderNameExceeds21CharactersInSQSEvent() throws IOException {
         var addCardRequest = new AddCardRequest(BANK_ACCOUNT_ID_BRAZIL, "J".repeat(22));
         var sqsEvent = createSQSEvent(addCardRequest);
 

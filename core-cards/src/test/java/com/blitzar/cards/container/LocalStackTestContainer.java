@@ -20,9 +20,10 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
     DockerImageName LOCALSTACK_IMAGE = DockerImageName.parse(LOCAL_STACK_IMAGE_NAME);
 
     String DYNAMODB_CARDS_TABLE_NAME = "cards-test";
+    String SQS_CARD_APPLICATION_QUEUE_NAME = "card-application-test";
 
     LocalStackContainer LOCALSTACK_CONTAINER = new LocalStackContainer(LOCALSTACK_IMAGE)
-            .withServices(Service.DYNAMODB)
+            .withServices(Service.DYNAMODB, Service.SQS)
             .withLogConsumer(outputFrame -> logger.info(outputFrame.getUtf8StringWithoutLineEnding()));
 
     @Override
@@ -47,7 +48,9 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
                 "AWS_SECRET_ACCESS_KEY", LOCALSTACK_CONTAINER.getSecretKey(),
                 "AWS_DEFAULT_REGION", LOCALSTACK_CONTAINER.getRegion(),
                 "AWS_DYNAMODB_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.DYNAMODB).toString(),
-                "AWS_DYNAMODB_CARDS_TABLE_NAME", DYNAMODB_CARDS_TABLE_NAME);
+                "AWS_DYNAMODB_CARDS_TABLE_NAME", DYNAMODB_CARDS_TABLE_NAME,
+                "AWS_SQS_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SQS).toString(),
+                "AWS_SQS_CARD_APPLICATION_QUEUE_NAME", SQS_CARD_APPLICATION_QUEUE_NAME);
     }
 
     default void logContainerConfiguration() {
@@ -57,7 +60,9 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
                 .append(String.format("  Secret Key: %s%n", LOCALSTACK_CONTAINER.getSecretKey()))
                 .append(String.format("  Region: %s%n", LOCALSTACK_CONTAINER.getRegion()))
                 .append(String.format("  DynamoDB Endpoint: %s%n", LOCALSTACK_CONTAINER.getEndpointOverride(Service.DYNAMODB)))
-                .append(String.format("  DynamoDB Cards table name: %s%n", DYNAMODB_CARDS_TABLE_NAME));
+                .append(String.format("  DynamoDB Cards table name: %s%n", DYNAMODB_CARDS_TABLE_NAME))
+                .append(String.format("  SQS Endpoint: %s%n", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SQS)))
+                .append(String.format("  SQS Card application queue name: %s%n", SQS_CARD_APPLICATION_QUEUE_NAME));
 
         logger.info(sbConfig.toString());
     }

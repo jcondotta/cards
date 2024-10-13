@@ -6,6 +6,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
+import net.datafaker.Faker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -35,7 +36,9 @@ public class AddCardService {
         logger.info("[BankAccountId={}, CardholderName={}] Attempting to add a new card", request.bankAccountId(), request.cardholderName());
 
         var constraintViolations = validator.validate(request);
-        if(!constraintViolations.isEmpty()){
+        if (!constraintViolations.isEmpty()) {
+            logger.warn("[BankAccountId={}, CardholderName={}] Validation errors for request. Violations: {}",
+                    request.bankAccountId(), request.cardholderName(), constraintViolations);
             throw new ConstraintViolationException(constraintViolations);
         }
 
@@ -43,7 +46,9 @@ public class AddCardService {
         card.setCardId(UUID.randomUUID());
         card.setBankAccountId(request.bankAccountId());
         card.setCardholderName(request.cardholderName());
-        card.setCardNumber(UUID.randomUUID().toString());
+
+        var cardNumber = new Faker().finance().creditCard();
+        card.setCardNumber(cardNumber);
         card.setCardStatus(AddCardRequest.DEFAULT_CARD_STATUS);
         card.setDailyWithdrawalLimit(AddCardRequest.DEFAULT_DAILY_WITHDRAWAL_LIMIT);
         card.setDailyPaymentLimit(AddCardRequest.DEFAULT_DAILY_PAYMENT_LIMIT);
@@ -54,8 +59,7 @@ public class AddCardService {
         dynamoDbTable.putItem(card);
 
         logger.info("[BankAccountId={}, CardholderName={}] Card saved to DB", request.bankAccountId(), request.cardholderName());
-
-        logger.debug(card.toString());
+        logger.debug("Saved Card: {}", card);
 
         return card;
     }

@@ -17,5 +17,5 @@ aws:
     table-name: ${AWS_DYNAMODB_CARDS_TABLE_NAME}
     endpoint: ${AWS_DYNAMODB_ENDPOINT:}
   sqs:
-    card-application-queue-name: ${AWS_SQS_CARD_APPLICATION_QUEUE}
+    card-application-queue-name: ${AWS_SQS_CARD_APPLICATION_QUEUE_NAME}
     endpoint: ${AWS_SQS_ENDPOINT:}

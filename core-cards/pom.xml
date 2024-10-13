@@ -31,7 +31,6 @@
         <logback.version>1.4.14</logback.version>
         <dynamodb-enhanced.version>2.25.2</dynamodb-enhanced.version>
         <datafaker.version>2.4.0</datafaker.version>
-        <hibernate-validator.version>8.0.1.Final</hibernate-validator.version>
 
         <!-- Test dependency versions -->
         <assertj.version>3.26.0</assertj.version>
