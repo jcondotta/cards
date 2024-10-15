@@ -58,15 +58,8 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
                 Map.entry("AWS_DEFAULT_REGION", LOCALSTACK_CONTAINER.getRegion())
         ));
 
-        // Add DynamoDB-specific properties from DynamoDBConstants
-        for (Map.Entry<String, String> entry : DynamoDBConstants.getDynamoDBPropertyEntries(LOCALSTACK_CONTAINER)) {
-            awsProperties.put(entry.getKey(), entry.getValue());
-        }
-
-        // Add SQS-specific properties from SQSConstants
-        for (Map.Entry<String, String> entry : SQSConstants.getSQSPropertyEntries(LOCALSTACK_CONTAINER)) {
-            awsProperties.put(entry.getKey(), entry.getValue());
-        }
+        awsProperties.putAll(DynamoDBConstants.getDynamoDBProperties(LOCALSTACK_CONTAINER));
+        awsProperties.putAll(SQSConstants.getSQSProperties(LOCALSTACK_CONTAINER));
 
         return awsProperties;
     }
