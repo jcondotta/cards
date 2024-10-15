@@ -1,10 +1,12 @@
 package com.blitzar.cards.factory.aws;
 
+import com.blitzar.cards.configuration.DynamoDbConfiguration;
 import com.blitzar.cards.domain.Card;
 import com.blitzar.cards.domain.CardStatus;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
@@ -17,18 +19,24 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Factory
-public class DynamoDBTableFactory {
+public class DynamoDBCardsTableFactory {
+
+    @Inject
+    private DynamoDbConfiguration dynamoDbConfiguration;
 
     @Singleton
-    @Requires(property = "aws.dynamodb.table-name")
-    public DynamoDbTable<Card> dynamoDbTable(DynamoDbEnhancedClient dynamoDbEnhancedClient, TableSchema<Card> cardTableSchema,
-                                             @Value("${aws.dynamodb.table-name}") String tableName){
-        return dynamoDbEnhancedClient.table(tableName, cardTableSchema);
+    @Requires(property = "aws.dynamodb.tables.cards.table-name")
+    public DynamoDbTable<Card> dynamoDbTable(DynamoDbEnhancedClient dynamoDbEnhancedClient, TableSchema<Card> cardTableSchema){
+        var cardsTableConfiguration = dynamoDbConfiguration.tables().cards();
+        return dynamoDbEnhancedClient.table(cardsTableConfiguration.tableName(), cardTableSchema);
     }
 
     @Singleton
     public DynamoDbIndex<Card> dynamoDbIndex(DynamoDbTable<Card> dynamoDbTable){
-        return dynamoDbTable.index("cards-by-bank-account-id-gsi");
+        var cardsByBankAccountIdGsiConfiguration = dynamoDbConfiguration
+                .globalSecondaryIndexes().cardsByBankAccountId();
+
+        return dynamoDbTable.index(cardsByBankAccountIdGsiConfiguration.name());
     }
 
     @Singleton
@@ -42,7 +50,8 @@ public class DynamoDBTableFactory {
                 .addAttribute(UUID.class, attr -> attr.name("bankAccountId")
                         .getter(Card::getBankAccountId)
                         .setter(Card::setBankAccountId)
-                        .tags(StaticAttributeTags.secondaryPartitionKey("cards-by-bank-account-id-gsi")))
+                        .tags(StaticAttributeTags
+                                .secondaryPartitionKey(dynamoDbConfiguration.globalSecondaryIndexes().cardsByBankAccountId().name())))
                 .addAttribute(String.class, attr -> attr.name("cardholderName")
                         .getter(Card::getCardholderName)
                         .setter(Card::setCardholderName))

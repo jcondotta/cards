@@ -22,7 +22,7 @@ public class SQSClientFactory {
 
     @Singleton
     @Replaces(SqsClient.class)
-    @Requires(property = "aws.dynamodb.endpoint", pattern = "^$")
+    @Requires(property = "aws.sqs.endpoint", pattern = "^$")
     public SqsClient sqsClient(Region region){
         var environmentVariableCredentialsProvider = EnvironmentVariableCredentialsProvider.create();
         var awsCredentials = environmentVariableCredentialsProvider.resolveCredentials();
@@ -37,8 +37,8 @@ public class SQSClientFactory {
 
     @Singleton
     @Replaces(SqsClient.class)
-    @Requires(property = "aws.dynamodb.endpoint", pattern = "(.|\\s)*\\S(.|\\s)*")
-    public SqsClient sqsClientEndpointOverridden(AwsCredentials awsCredentials, Region region, @Value("${aws.dynamodb.endpoint}") String endpoint){
+    @Requires(property = "aws.sqs.endpoint", pattern = "(.|\\s)*\\S(.|\\s)*")
+    public SqsClient sqsClientEndpointOverridden(AwsCredentials awsCredentials, Region region, @Value("${aws.sqs.endpoint}") String endpoint){
         logger.info("Building SQSClient with params: awsCredentials: {}, region: {} and endpoint: {}", awsCredentials, region, endpoint);
 
         return SqsClient.builder()
