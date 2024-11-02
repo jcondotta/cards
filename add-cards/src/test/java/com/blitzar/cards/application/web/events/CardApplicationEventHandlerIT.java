@@ -218,18 +218,14 @@ class CardApplicationEventHandlerIT implements LocalStackTestContainer {
 
         waitForNoMessagesInQueue(cardApplicationQueueURL);
 
-        await().atMost(2, TimeUnit.SECONDS)
-                .pollInterval(500, TimeUnit.MILLISECONDS)
-                .untilAsserted(() -> {
-                    var cardApplicationDLQMessages = sqsClient.receiveMessage(builder -> builder.queueUrl(cardApplicationDLQURL).build()).messages();
-                    assertThat(cardApplicationDLQMessages)
-                            .hasSize(1)
-                            .first()
-                            .satisfies(message -> {
-                                var receivedAddCardRequest = extractAddCardRequest(message.body());
-                                assertThat(receivedAddCardRequest.bankAccountId()).isNull();
-                                assertThat(receivedAddCardRequest.cardholderName()).isEqualTo(CARDHOLDER_NAME_JEFFERSON);
-                            });
+        var cardApplicationDLQMessages = sqsClient.receiveMessage(builder -> builder.queueUrl(cardApplicationDLQURL).build()).messages();
+        assertThat(cardApplicationDLQMessages)
+                .hasSize(1)
+                .first()
+                .satisfies(message -> {
+                    var receivedAddCardRequest = extractAddCardRequest(message.body());
+                    assertThat(receivedAddCardRequest.bankAccountId()).isNull();
+                    assertThat(receivedAddCardRequest.cardholderName()).isEqualTo(CARDHOLDER_NAME_JEFFERSON);
                 });
     }
 
@@ -260,25 +256,21 @@ class CardApplicationEventHandlerIT implements LocalStackTestContainer {
 
         waitForNoMessagesInQueue(cardApplicationQueueURL);
 
-        await().atMost(2, TimeUnit.SECONDS)
-                .pollInterval(1500, TimeUnit.MILLISECONDS)
-                .untilAsserted(() -> {
-                    var cardApplicationDLQMessages = sqsClient.receiveMessage(builder -> builder.queueUrl(cardApplicationDLQURL).build()).messages();
-                    assertThat(cardApplicationDLQMessages)
-                            .hasSize(1)
-                            .first()
-                            .satisfies(message -> {
-                                var receivedAddCardRequest = extractAddCardRequest(message.body());
-                                assertThat(receivedAddCardRequest.bankAccountId()).isEqualTo(BANK_ACCOUNT_ID_BRAZIL);
-                                assertThat(receivedAddCardRequest.cardholderName()).isNull();
-                            });
+        var cardApplicationDLQMessages = sqsClient.receiveMessage(builder -> builder.queueUrl(cardApplicationDLQURL).build()).messages();
+        assertThat(cardApplicationDLQMessages)
+                .hasSize(1)
+                .first()
+                .satisfies(message -> {
+                    var receivedAddCardRequest = extractAddCardRequest(message.body());
+                    assertThat(receivedAddCardRequest.bankAccountId()).isEqualTo(BANK_ACCOUNT_ID_BRAZIL);
+                    assertThat(receivedAddCardRequest.cardholderName()).isNull();
                 });
     }
 
     private void waitForNoMessagesInQueue(String queueUrl) {
-        await().atMost(2, TimeUnit.SECONDS)
-                .pollDelay(1, TimeUnit.SECONDS)
-                .pollInterval(500, TimeUnit.MILLISECONDS)
+        await().atMost(1, TimeUnit.SECONDS)
+                .pollDelay(200, TimeUnit.MILLISECONDS)
+                .pollInterval(300, TimeUnit.MILLISECONDS)
                 .untilAsserted(() -> {
                     var messages = sqsClient.receiveMessage(builder -> builder.queueUrl(queueUrl).build()).messages();
                     assertThat(messages).hasSize(0);

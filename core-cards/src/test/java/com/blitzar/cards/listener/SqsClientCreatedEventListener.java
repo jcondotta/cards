@@ -30,7 +30,7 @@ public class SqsClientCreatedEventListener implements BeanCreatedEventListener<S
         var sqsClient = event.getBean();
         var sqsQueueCreator = new SQSQueueCreator(sqsClient);
 
-        var cardApplicationQueueAttributes = Map.of(QueueAttributeName.VISIBILITY_TIMEOUT, "1");
+        var cardApplicationQueueAttributes = Map.of(QueueAttributeName.VISIBILITY_TIMEOUT, "0");
         var cardApplicationQueueURL = sqsQueueCreator.createSQSQueue(cardApplicationQueueName, cardApplicationQueueAttributes);
 
         var cardApplicationDLQURL = sqsQueueCreator.createSQSQueue(cardApplicationDLQName);
@@ -42,9 +42,6 @@ public class SqsClientCreatedEventListener implements BeanCreatedEventListener<S
                 .queueUrl(cardApplicationQueueURL)
                 .attributes(Map.of(QueueAttributeName.REDRIVE_POLICY, redrivePolicy))
                 .build());
-//
-        System.out.println("Redrive policy set successfully on queue: " + cardApplicationQueueURL);
-
 
         return sqsClient;
     }

@@ -41,7 +41,6 @@ public class DynamoDBTableCardCreatedEventListener implements BeanCreatedEventLi
                                     .build())
                     )
             );
-
         }
         catch (Exception e) {
             logger.error("An unexpected error occurred while checking the DynamoDB table: {}", e.getMessage(), e);
