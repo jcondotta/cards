@@ -10,11 +10,11 @@ import java.util.stream.Stream;
 public class ThreatInputArgumentProvider implements ArgumentsProvider {
 
     private final List<ArgumentsProvider> argumentProviders = List.of(
-            new XSSArgumentProvider()
-//            new SQLInjectionArgumentProvider(),
-//            new CommandInjectionArgumentProvider(),
-//            new LDAPInjectionArgumentProvider(),
-//            new PathTraversalArgumentProvider()
+            new XSSArgumentProvider(),
+            new SQLInjectionArgumentProvider(),
+            new CommandInjectionArgumentProvider(),
+            new LDAPInjectionArgumentProvider(),
+            new PathTraversalArgumentProvider()
     );
 
     @Override

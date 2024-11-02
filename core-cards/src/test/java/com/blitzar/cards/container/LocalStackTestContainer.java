@@ -20,20 +20,9 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
     String LOCAL_STACK_IMAGE_NAME = "localstack/localstack:3.7.0";
     DockerImageName LOCALSTACK_IMAGE = DockerImageName.parse(LOCAL_STACK_IMAGE_NAME);
 
-    String DYNAMODB_CARDS_TABLE_NAME = "cards-test";
-    String DYNAMODB_CARDS_BY_BANK_ACCOUNT_ID_GSI_NAME = "cards-by-bank-account-id-gsi-test";
-
-    String SQS_CARD_APPLICATION_QUEUE_NAME = "card-application-test";
-    String SQS_CARD_APPLICATION_VISIBILITY_TIMEOUT = "1";
-    String SQS_CARD_APPLICATION_RECEIVE_MESSAGE_WAIT_TIME_SECONDS = "20";
-    String SQS_CARD_APPLICATION_MESSAGE_RETENTION_PERIOD_SECONDS = "345600";  // 4 days
-
-    String SQS_CARD_APPLICATION_DLQ_NAME = "card-application-dlq-test";
-    String SQS_CARD_APPLICATION_DLQ_MESSAGE_RETENTION_PERIOD_SECONDS = "1209600";  // 14 days
-
     LocalStackContainer LOCALSTACK_CONTAINER = new LocalStackContainer(LOCALSTACK_IMAGE)
-            .withServices(Service.DYNAMODB, Service.SQS, Service.LAMBDA)
-            .withLogConsumer(outputFrame -> logger.info(outputFrame.getUtf8StringWithoutLineEnding()));
+            .withServices(Service.DYNAMODB, Service.SQS)
+            .withLogConsumer(outputFrame -> logger.debug(outputFrame.getUtf8StringWithoutLineEnding()));
 
     @Override
     default Map<String, String> getProperties() {
@@ -52,25 +41,23 @@ public interface LocalStackTestContainer extends TestPropertyProvider {
     }
 
     default Map<String, String> getAWSProperties() {
-        Map<String, String> awsProperties = new HashMap<>(Map.ofEntries(
+        return Map.ofEntries(
                 Map.entry("AWS_ACCESS_KEY_ID", LOCALSTACK_CONTAINER.getAccessKey()),
                 Map.entry("AWS_SECRET_ACCESS_KEY", LOCALSTACK_CONTAINER.getSecretKey()),
-                Map.entry("AWS_DEFAULT_REGION", LOCALSTACK_CONTAINER.getRegion())
-        ));
-
-        awsProperties.putAll(DynamoDBConstants.getDynamoDBProperties(LOCALSTACK_CONTAINER));
-        awsProperties.putAll(SQSConstants.getSQSProperties(LOCALSTACK_CONTAINER));
-
-        return awsProperties;
+                Map.entry("AWS_DEFAULT_REGION", LOCALSTACK_CONTAINER.getRegion()),
+                Map.entry("AWS_DYNAMODB_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.DYNAMODB).toString()),
+                Map.entry("AWS_SQS_ENDPOINT", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SQS).toString())
+        );
     }
 
     default void logContainerConfiguration() {
-        StringBuilder sbConfig = new StringBuilder("\nLocalStack container configuration:\n")
+        StringBuilder sbConfig = new StringBuilder();
+        sbConfig.append("\nLocalStack container configuration:\n")
                 .append(String.format("  Access Key: %s%n", LOCALSTACK_CONTAINER.getAccessKey()))
                 .append(String.format("  Secret Key: %s%n", LOCALSTACK_CONTAINER.getSecretKey()))
                 .append(String.format("  Region: %s%n", LOCALSTACK_CONTAINER.getRegion()))
-                .append(DynamoDBConstants.prettyPrint(LOCALSTACK_CONTAINER))
-                .append(SQSConstants.prettyPrint(LOCALSTACK_CONTAINER));
+                .append(String.format("  DynamoDB Endpoint: %s%n", LOCALSTACK_CONTAINER.getEndpointOverride(Service.DYNAMODB)))
+                .append(String.format("  SQS Endpoint: %s%n", LOCALSTACK_CONTAINER.getEndpointOverride(Service.SQS)));
 
         logger.info(sbConfig.toString());
     }

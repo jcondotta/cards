@@ -1,11 +1,9 @@
 package com.blitzar.cards.listener;
 
-import com.blitzar.cards.configuration.SqsConfiguration;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.context.event.BeanCreatedEvent;
 import io.micronaut.context.event.BeanCreatedEventListener;
 import io.micronaut.core.annotation.NonNull;
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,35 +17,27 @@ import java.util.Map;
 @Singleton
 public class SqsClientCreatedEventListener implements BeanCreatedEventListener<SqsClient> {
 
-    private static final Logger logger = LoggerFactory.getLogger(SqsClientCreatedEventListener.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SqsClientCreatedEventListener.class);
 
-    @Inject
-    private SqsConfiguration sqsConfiguration;
-
-    @Value("${aws.sqs.card-application-queue.name}")
+    @Value("${aws.sqs.queues.card-application-queue.name}")
     private String cardApplicationQueueName;
 
-    @Value("${aws.sqs.card-application-dlq.name}")
+    @Value("${aws.sqs.queues.card-application-dead-letter-queue.name}")
     private String cardApplicationDLQName;
 
     @Override
     public SqsClient onCreated(@NonNull BeanCreatedEvent<SqsClient> event) {
-
-        System.out.println(sqsConfiguration.cardApplicationQueue().name());
         var sqsClient = event.getBean();
         var sqsQueueCreator = new SQSQueueCreator(sqsClient);
 
-        var cardApplicationQueueAttributes = Map.of(QueueAttributeName.VISIBILITY_TIMEOUT, "0");
+        var cardApplicationQueueAttributes = Map.of(QueueAttributeName.VISIBILITY_TIMEOUT, "1");
         var cardApplicationQueueURL = sqsQueueCreator.createSQSQueue(cardApplicationQueueName, cardApplicationQueueAttributes);
 
         var cardApplicationDLQURL = sqsQueueCreator.createSQSQueue(cardApplicationDLQName);
         var cardApplicationDLQARN = getSingleQueueAttribute(sqsClient, cardApplicationDLQURL, QueueAttributeName.QUEUE_ARN);
 
-        System.out.println(cardApplicationDLQARN);
-
         String redrivePolicy = String.format("{\"deadLetterTargetArn\":\"%s\",\"maxReceiveCount\":\"%d\"}", cardApplicationDLQARN, 1);
-//
-//        // Set the redrive policy on the main queue
+
         sqsClient.setQueueAttributes(SetQueueAttributesRequest.builder()
                 .queueUrl(cardApplicationQueueURL)
                 .attributes(Map.of(QueueAttributeName.REDRIVE_POLICY, redrivePolicy))

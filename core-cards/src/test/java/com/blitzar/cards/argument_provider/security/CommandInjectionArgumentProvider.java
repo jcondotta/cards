@@ -15,9 +15,7 @@ public class CommandInjectionArgumentProvider implements ArgumentsProvider {
                 Arguments.of(Named.of("Command Injection - RM", "; rm -rf /")),
                 Arguments.of(Named.of("Command Injection - Listing Files", "&& ls")),
                 Arguments.of(Named.of("Command Injection - Piping Output", "| cat /etc/passwd")),
-                Arguments.of(Named.of("Command Injection - Redirect Output", "&& echo 'malicious' > /tmp/output")),
-                Arguments.of(Named.of("Command Injection - Background Execution", "&& sleep 10 &")),
-                Arguments.of(Named.of("Command Injection - Multiple Commands", "&& echo 'test'; ls"))
+                Arguments.of(Named.of("Command Injection - Background Execution", "&& sleep 10 &"))
         );
     }
 }

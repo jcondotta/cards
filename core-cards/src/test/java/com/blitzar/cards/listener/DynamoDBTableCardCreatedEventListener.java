@@ -1,10 +1,7 @@
 package com.blitzar.cards.listener;
 
-import com.blitzar.cards.configuration.DynamoDbConfiguration;
-import com.blitzar.cards.configuration.DynamoDbConfiguration.CardsByBankAccountIdGsiConfiguration;
-import com.blitzar.cards.configuration.SqsConfiguration;
+import com.blitzar.cards.configuration.CardsByBankAccountIdGsiConfiguration;
 import com.blitzar.cards.domain.Card;
-import io.micronaut.context.annotation.Requires;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.context.event.BeanCreatedEvent;
 import io.micronaut.context.event.BeanCreatedEventListener;
@@ -23,8 +20,8 @@ public class DynamoDBTableCardCreatedEventListener implements BeanCreatedEventLi
 
     private static final Logger logger = LoggerFactory.getLogger(DynamoDBTableCardCreatedEventListener.class);
 
-    @Inject
-    private CardsByBankAccountIdGsiConfiguration cardsByBankAccountIdGsiConfiguration;
+    @Value("${aws.dynamodb.tables.cards.global-secondary-indexes.cards-by-bank-account-id.name}")
+    String cardsByBankAccountIdIndexName;
 
     @Override
     public DynamoDbTable<Card> onCreated(@NonNull BeanCreatedEvent<DynamoDbTable<Card>> event){
@@ -36,18 +33,15 @@ public class DynamoDBTableCardCreatedEventListener implements BeanCreatedEventLi
         }
         catch (ResourceNotFoundException e) {
             logger.warn("DynamoDB table for type {} not found. Creating the table.", dynamoDBTable.tableSchema().itemType());
-
             dynamoDBTable.createTable(builder -> builder
                     .globalSecondaryIndices(gsiBuilder -> gsiBuilder
-                            .indexName(cardsByBankAccountIdGsiConfiguration.name())
+                            .indexName(cardsByBankAccountIdIndexName)
                             .projection(Projection.builder()
                                     .projectionType(ProjectionType.ALL)
                                     .build())
-                            .provisionedThroughput(provisionedThroughputBuilder ->
-                                    provisionedThroughputBuilder.readCapacityUnits(cardsByBankAccountIdGsiConfiguration.readCapacityUnits())
-                                            .writeCapacityUnits(cardsByBankAccountIdGsiConfiguration.writeCapacityUnits())
-                                            .build()))
+                    )
             );
+
         }
         catch (Exception e) {
             logger.error("An unexpected error occurred while checking the DynamoDB table: {}", e.getMessage(), e);

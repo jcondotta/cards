@@ -7,8 +7,10 @@ import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.validation.validator.constraints.ConstraintValidator;
 import io.micronaut.validation.validator.constraints.ConstraintValidatorContext;
+import jakarta.inject.Singleton;
 import software.amazon.awssdk.utils.StringUtils;
 
+@Singleton
 public class SecureInputValidator implements ConstraintValidator<SecureInput, String> {
 
     private final ThreatInputPatternDetector threatInputPatternDetector;
@@ -19,7 +21,6 @@ public class SecureInputValidator implements ConstraintValidator<SecureInput, St
 
     @Override
     public boolean isValid(@Nullable String value, @NonNull AnnotationValue<SecureInput> annotationMetadata, @NonNull ConstraintValidatorContext context) {
-        // If the input is blank or null, it's considered valid
         if (StringUtils.isBlank(value)) {
             return true;
         }

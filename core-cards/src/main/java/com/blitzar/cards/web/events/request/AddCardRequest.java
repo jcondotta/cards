@@ -1,11 +1,13 @@
 package com.blitzar.cards.web.events.request;
 
 import com.blitzar.cards.domain.CardStatus;
-import com.blitzar.cards.validation.annotation.CardholderName;
+import com.blitzar.cards.validation.annotation.SecureInput;
 import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
@@ -22,7 +24,9 @@ public record AddCardRequest(
         @Schema(description = "The cardholder's name that will appear on the card.",
                 example = "Jefferson Condotta",
                 requiredMode = RequiredMode.REQUIRED)
-        @CardholderName
+        @NotBlank(message = "card.cardholderName.notBlank")
+        @Size(max = 31, message = "card.cardholderName.tooLong")
+        @SecureInput(message = "card.cardholderName.invalid")
         String cardholderName
 ) {
     public static final CardStatus DEFAULT_CARD_STATUS = CardStatus.LOCKED;

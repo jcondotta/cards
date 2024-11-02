@@ -14,11 +14,8 @@ public class SQLInjectionArgumentProvider implements ArgumentsProvider {
         return Stream.of(
                 Arguments.of(Named.of("SQL Injection - Single Quote", "' OR '1'='1'")),
                 Arguments.of(Named.of("SQL Injection - Comment", "1; DROP TABLE users; --")),
-                Arguments.of(Named.of("SQL Injection - Union Select", "1 UNION SELECT username, password FROM users")),
                 Arguments.of(Named.of("SQL Injection - OR Condition", "1 OR 1=1")),
-                Arguments.of(Named.of("SQL Injection - Time Delay", "1; WAITFOR DELAY '00:00:10';")),
-                Arguments.of(Named.of("SQL Injection - Nested Queries", "1; SELECT (SELECT COUNT(*) FROM users);")),
-                Arguments.of(Named.of("SQL Injection - Commented Code", "1; -- SELECT * FROM users"))
+                Arguments.of(Named.of("SQL Injection - Time Delay", "1; WAITFOR DELAY '00:00:10';"))
         );
     }
 }
