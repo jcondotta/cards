@@ -3,13 +3,13 @@ schema {
 }
 
 type Query {
-    cards(bankAccountId: ID): [CardDTO]
-    card(cardId: ID): CardDTO
+    cards(bankAccountId: ID!): [CardDTO]
+    card(cardId: ID!): CardDTO
 }
 
 type CardDTO {
-    bankAccountId: String
-    cardId: String
+    bankAccountId: ID
+    cardId: ID
     cardholderName: String
     cardNumber: String
     cardStatus: String

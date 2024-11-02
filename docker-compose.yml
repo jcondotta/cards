@@ -8,16 +8,28 @@ services:
       - '127.0.0.1:4566:4566'
       - '127.0.0.1:4510-4513:4510-4513' # External services port range.
     environment:
-      SERVICES: sqs, dynamodb, iam, lambda
-      AWS_ACCESS_KEY_ID: devAccessKeyId
-      AWS_SECRET_ACCESS_KEY: devSecretAccessKey
+      SERVICES: dynamodb, iam, sts, lambda, apigateway, sqs, cloudwatch, logs
+
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
       AWS_DEFAULT_REGION: us-east-1
+      AWS_DYNAMODB_ENDPOINT: 'http://localstack:4566'
+      AWS_SQS_ENDPOINT: 'http://localstack:4566'
+
+      AWS_DYNAMODB_CARDS_TABLE_NAME: 'cards-localstack'
+      AWS_DYNAMODB_CARDS_BY_BANK_ACCOUNT_ID_GSI_NAME: 'cards-by-bank-account-id-gsi-localstack'
+#      AWS_DYNAMODB_CARDS_BY_BANK_ACCOUNT_ID_GSI_READ_CAPACITY_UNITS: 3
+#      AWS_DYNAMODB_CARDS_BY_BANK_ACCOUNT_ID_GSI_WRITE_CAPACITY_UNITS: 3
+#
+      AWS_SQS_CARD_APPLICATION_QUEUE_NAME: 'card-application-localstack'
+#      AWS_SQS_CARD_APPLICATION_VISIBILITY_TIMEOUT: '30'
+#      AWS_SQS_CARD_APPLICATION_RECEIVE_MESSAGE_WAIT_TIME_SECONDS: '20'
+#      AWS_SQS_CARD_APPLICATION_MESSAGE_RETENTION_PERIOD_SECONDS: '345600'  # 4 days
+#
+#      AWS_SQS_CARD_APPLICATION_DLQ_NAME: 'card-application-dlq-localstack'
+#      AWS_SQS_CARD_APPLICATION_DLQ_MESSAGE_RETENTION_PERIOD_SECONDS: '1209600'  # 14 days
+
       LS_LOG: ${LS_LOG:-debug}
       DOCKER_HOST: unix:///var/run/docker.sock
     volumes:
       - '/var/run/docker.sock:/var/run/docker.sock'
-      - './localstack-scripts:/etc/localstack/init/ready.d/'  # ready hook
-      - '${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack'
-#      - "${TMPDIR:-/tmp}/localstack:/tmp/localstack"
-      - './add-cards/target/add-cards-0.1.jar:/tmp/add-cards-0.1.jar'
-    command: sh -c "chmod 777 -R /tmp"

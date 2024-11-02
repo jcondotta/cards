@@ -28,15 +28,10 @@ public class DynamoDBTableCardCreatedEventListener implements BeanCreatedEventLi
             logger.info("Creating DynamoDbTable from type: {}", dynamoDBTable.tableSchema().itemType());
 
             dynamoDBTable.createTable(builder -> builder
-                    .globalSecondaryIndices(gsiBuilder -> gsiBuilder.indexName("bankAccountId-gsi")
+                    .globalSecondaryIndices(gsiBuilder -> gsiBuilder.indexName("cards-by-bank-account-id-gsi")
                             .projection(Projection.builder().projectionType(ProjectionType.ALL).build())
                             .provisionedThroughput(builder1 -> builder1.readCapacityUnits(3L).writeCapacityUnits(3L).build()))
             );
-
-//
-//            logger.info("Finished DynamoDbTable from type: {}", dynamoDBTable.tableSchema().itemType());
-
-//            dynamoDBTable.createTable();
         }
 
         return dynamoDBTable;

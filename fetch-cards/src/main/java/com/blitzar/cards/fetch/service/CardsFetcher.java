@@ -13,42 +13,57 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.core.pagination.sync.SdkIterable;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
-import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Singleton
 public class CardsFetcher implements DataFetcher<List<CardDTO>> {
 
     private static final Logger logger = LoggerFactory.getLogger(CardsFetcher.class);
 
-    @Inject
     private final DynamoDbIndex<Card> dynamoDbIndex;
 
+    @Inject
     public CardsFetcher(DynamoDbIndex<Card> dynamoDbIndex) {
         this.dynamoDbIndex = dynamoDbIndex;
     }
 
     @Override
     public List<CardDTO> get(DataFetchingEnvironment fetchingEnvironment) throws Exception {
-        String bankAccountId = fetchingEnvironment.getArgument("bankAccountId");
-        if(StringUtils.isBlank(bankAccountId)){
-            throw new GraphQLException("card.bankAccountId.notBlank");
+        String bankAccountIdStr = fetchingEnvironment.getArgument("bankAccountId");
+
+        if (StringUtils.isBlank(bankAccountIdStr)) {
+            throw new GraphQLException("card.bankAccountId.notNull");
         }
 
-        var queryConditional = QueryConditional.keyEqualTo(builder -> builder.partitionValue(bankAccountId).build());
+        UUID bankAccountId;
+        try {
+            bankAccountId = UUID.fromString(bankAccountIdStr);
+        } catch (IllegalArgumentException e) {
+            throw new GraphQLException("Invalid bank account ID format", e);
+        }
 
-        logger.info("[BankAccountId={}] Attempting to fetch cards", bankAccountId);
-        final SdkIterable<Page<Card>> queryResult = dynamoDbIndex.query(queryConditional);
+        var queryConditional = QueryConditional.keyEqualTo(builder -> builder.partitionValue(bankAccountId.toString()).build());
+        logger.info("[BankAccountId={}] Attempting to fetch cards with limit: {}", bankAccountId);
 
+        QueryEnhancedRequest queryRequest = QueryEnhancedRequest.builder()
+                .queryConditional(queryConditional)
+                .build();
+
+        final SdkIterable<Page<Card>> queryResult = dynamoDbIndex.query(queryRequest);
         List<CardDTO> cards = new ArrayList<>();
-        queryResult.stream()
-                .forEach(page -> page.items()
-                        .forEach(card -> cards.add(new CardDTO(card))));
+
+        for (Page<Card> page : queryResult) {
+            cards.addAll(page.items().stream().map(CardDTO::new).collect(Collectors.toList()));
+        }
 
         logger.info("[BankAccountId={}] Card(s) found: {}", bankAccountId, cards.size());
         return cards;

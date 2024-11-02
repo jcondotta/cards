@@ -1,6 +1,0 @@
-aws:
-  access-key-id: devAccessKeyId
-  secret-key: devSecretAccessKey
-  region: us-east-1
-  dynamodb:
-    endpoint: 'http://127.0.0.1:4566'

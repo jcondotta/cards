@@ -14,15 +14,16 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Singleton
 public class CardFetcher implements DataFetcher<CardDTO> {
 
     private static final Logger logger = LoggerFactory.getLogger(CardFetcher.class);
 
-    @Inject
     private final DynamoDbTable<Card> dynamoDbTable;
 
+    @Inject
     public CardFetcher(DynamoDbTable<Card> dynamoDbTable) {
         this.dynamoDbTable = dynamoDbTable;
     }
@@ -30,15 +31,22 @@ public class CardFetcher implements DataFetcher<CardDTO> {
     @Override
     public CardDTO get(DataFetchingEnvironment fetchingEnvironment) throws Exception {
         String cardId = fetchingEnvironment.getArgument("cardId");
-        if(StringUtils.isBlank(cardId)){
-            throw new GraphQLException("card.cardId.notBlank");
+
+        try {
+            if(StringUtils.isNotBlank(cardId)){
+                UUID.fromString(cardId);
+            }
+        }
+        catch (IllegalArgumentException e) {
+            throw new GraphQLException("Invalid card ID format", e);
         }
 
         logger.info("[CardId={}] Attempting to fetch card", cardId);
-        var key = Key.builder().partitionValue(cardId).build();
+        var key = Key.builder().partitionValue(cardId.toString()).build();
 
         var card = dynamoDbTable.getItem(key);
-        if(Objects.isNull(card)){
+        if (Objects.isNull(card)) {
+            logger.warn("[CardId={}] Card not found", cardId);
             throw new GraphQLException("card.notFound");
         }
 
