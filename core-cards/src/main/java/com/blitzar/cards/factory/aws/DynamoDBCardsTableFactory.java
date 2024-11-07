@@ -32,6 +32,7 @@ public class DynamoDBCardsTableFactory {
     }
 
     @Singleton
+    @Requires("${aws.dynamodb.tables.cards.global-secondary-indexes.cards-by-bank-account-id.name}")
     public DynamoDbIndex<Card> dynamoDbIndex(DynamoDbTable<Card> dynamoDbTable){
         return dynamoDbTable.index(cardsByBankAccountIdIndexName);
     }

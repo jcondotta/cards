@@ -146,6 +146,7 @@
                     <compilerArgs>
                         <arg>-Amicronaut.processing.group=com.blitzar.add-cards</arg>
                         <arg>-Amicronaut.processing.module=add-cards</arg>
+                        <arg>-Xlint:all</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>

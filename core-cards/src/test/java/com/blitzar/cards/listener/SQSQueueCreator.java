@@ -12,7 +12,7 @@ import java.util.Map;
 @Singleton
 public class SQSQueueCreator {
 
-    private static final Logger logger = LoggerFactory.getLogger(SQSQueueCreator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SQSQueueCreator.class);
 
     private final SqsClient sqsClient;
 
@@ -33,11 +33,11 @@ public class SQSQueueCreator {
         var queueUrls = sqsClient.listQueues().queueUrls();
 
         if (queueUrls.stream().noneMatch(queueUrl -> queueUrl.contains(queueName))) {
-            logger.info("Queue not found. Creating SQS queue with name: {}", queueName);
+            LOGGER.info("Queue not found. Creating SQS queue with name: {}", queueName);
             return createQueue(queueName, queueAttributes);
         }
         else {
-            logger.debug("Queue exists: {}", queueName);
+            LOGGER.debug("Queue exists: {}", queueName);
             return getQueueUrl(queueName);
         }
     }
@@ -48,7 +48,7 @@ public class SQSQueueCreator {
                 .attributes(queueAttributes)
                 .build());
 
-        logger.info("Queue created successfully: {} with URL: {}", queueName, createQueueResponse.queueUrl());
+        LOGGER.info("Queue created successfully: {} with URL: {}", queueName, createQueueResponse.queueUrl());
         return createQueueResponse.queueUrl();
     }
 
