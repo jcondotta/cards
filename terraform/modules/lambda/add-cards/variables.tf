@@ -60,6 +60,11 @@ variable "dynamodb_cards_table_name" {
   type        = string
 }
 
+variable "dynamodb_cards_by_bank_account_id_gsi_name" {
+  description = "The name of the DynamoDB global secondary index the Lambda will interact with"
+  type        = string
+}
+
 variable "sqs_card_application_queue_arn" {
   description = "The ARN of the card application SQS queue"
   type        = string
@@ -67,6 +72,16 @@ variable "sqs_card_application_queue_arn" {
 
 variable "sqs_card_application_queue_name" {
   description = "The name of the card application SQS queue"
+  type        = string
+}
+
+variable "sqs_card_application_dead_letter_queue_arn" {
+  description = "The ARN of the card application SQS dead letter queue"
+  type        = string
+}
+
+variable "sqs_card_application_dead_letter_queue_name" {
+  description = "The name of the card application SQS dead letter queue"
   type        = string
 }
 

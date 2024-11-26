@@ -44,7 +44,10 @@ resource "aws_iam_role_policy" "lambda_policy" {
             "sqs:GetQueueAttributes",
           ],
           "Effect" : "Allow",
-          "Resource" : var.sqs_card_application_queue_arn
+          "Resource" : [
+            var.sqs_card_application_queue_arn,
+            var.sqs_card_application_dead_letter_queue_arn
+          ]
         },
         {
           "Effect": "Allow",

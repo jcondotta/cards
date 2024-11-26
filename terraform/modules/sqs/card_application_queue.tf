@@ -6,7 +6,6 @@ resource "aws_sqs_queue" "card_application_queue" {
   delay_seconds              = var.card_application_queue_delay_seconds
   receive_wait_time_seconds =  var.card_application_queue_receive_wait_time_seconds
 
-
   redrive_policy = jsonencode(
     {
       deadLetterTargetArn = aws_sqs_queue.card_application_dead_letter_queue.arn

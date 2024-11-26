@@ -12,7 +12,8 @@ resource "aws_lambda_function" "add_cards_lambda" {
   environment {
     variables = merge({
       AWS_DYNAMODB_CARDS_TABLE_NAME = var.dynamodb_cards_table_name,
-      AWS_SQS_CARD_APPLICATION_QUEUE_NAME = var.sqs_card_application_queue_name},
+      AWS_SQS_CARD_APPLICATION_QUEUE_NAME = var.sqs_card_application_queue_name,
+      AWS_DYNAMODB_CARDS_BY_BANK_ACCOUNT_ID_GSI_NAME = var.dynamodb_cards_by_bank_account_id_gsi_name},
       var.lambda_environment_variables
     )
   }

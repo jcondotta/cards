@@ -39,7 +39,7 @@ class CardsFetcherIT implements LocalStackTestContainer {
 
 
     private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
-    private static final UUID BANK_ACCOUNT_ID_ITALY = TestBankAccount.ITALY.getBankAccountId();
+//    private static final UUID BANK_ACCOUNT_ID_ITALY = TestBankAccount.ITALY.getBankAccountId();
 
     private static final String CARDHOLDER_JEFFERSON = TestCardholder.JEFFERSON.getCardholderName();
 
