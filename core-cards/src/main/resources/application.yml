@@ -1,4 +1,0 @@
-aws:
-  access-key-id: ${AWS_ACCESS_KEY_ID}
-  secret-key: ${AWS_SECRET_ACCESS_KEY}
-  region: us-east-1

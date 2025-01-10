@@ -58,7 +58,7 @@ resource "aws_api_gateway_integration" "patch_cancel_card_integration" {
   resource_id = aws_api_gateway_resource.cancellation.id
   http_method = aws_api_gateway_method.patch_cancel_card.http_method
 
-  integration_http_method = "POST"  # Should be POST for a Lambda integration
+  integration_http_method = "POST" # Should be POST for a Lambda integration
   type                    = "AWS_PROXY"
   uri                     = var.management_cards_lambda_invoke_uri
 }
@@ -81,7 +81,7 @@ resource "aws_api_gateway_integration" "patch_lock_card_integration" {
   resource_id = aws_api_gateway_resource.lock.id
   http_method = aws_api_gateway_method.patch_lock_card.http_method
 
-  integration_http_method = "POST"  # Should be POST for a Lambda integration
+  integration_http_method = "POST" # Should be POST for a Lambda integration
   type                    = "AWS_PROXY"
   uri                     = var.management_cards_lambda_invoke_uri
 }

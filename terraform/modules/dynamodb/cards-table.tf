@@ -4,7 +4,7 @@ resource "aws_dynamodb_table" "cards" {
   read_capacity  = var.cards_read_capacity
   write_capacity = var.cards_write_capacity
 
-  hash_key       = "cardId"
+  hash_key = "cardId"
 
   attribute {
     name = "cardId"
@@ -17,11 +17,11 @@ resource "aws_dynamodb_table" "cards" {
   }
 
   global_secondary_index {
-    name               = var.cards_by_bank_account_id_gsi_name
-    hash_key           = "bankAccountId"
-    projection_type    = "ALL"
-    read_capacity      = var.cards_by_bank_account_id_gsi_read_capacity
-    write_capacity     = var.cards_by_bank_account_id_gsi_write_capacity
+    name            = var.cards_by_bank_account_id_gsi_name
+    hash_key        = "bankAccountId"
+    projection_type = "ALL"
+    read_capacity   = var.cards_by_bank_account_id_gsi_read_capacity
+    write_capacity  = var.cards_by_bank_account_id_gsi_write_capacity
   }
 
   tags = var.tags

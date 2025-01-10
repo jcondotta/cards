@@ -46,5 +46,6 @@ variable "cards_by_bank_account_id_gsi_write_capacity" {
 variable "tags" {
   description = "Tags applied to all resources for organization and cost tracking across environments and projects."
   type        = map(string)
+  default     = {}
 }
 

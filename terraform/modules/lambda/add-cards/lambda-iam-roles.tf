@@ -1,5 +1,5 @@
 resource "aws_iam_role" "add_cards_lambda_role_exec" {
-  name = "${var.lambda_function_name}-exec-role"
+  name = "${var.function_name}-exec-role"
 
   assume_role_policy = jsonencode(
     {
@@ -17,7 +17,7 @@ resource "aws_iam_role" "add_cards_lambda_role_exec" {
 }
 
 resource "aws_iam_role_policy" "lambda_policy" {
-  name = "${var.lambda_function_name}-policy"
+  name = "${var.function_name}-policy"
   role = aws_iam_role.add_cards_lambda_role_exec.id
 
   policy = jsonencode(
@@ -35,7 +35,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
             "logs:PutLogEvents"
           ],
           "Effect" : "Allow",
-          "Resource" : "arn:aws:logs:${var.aws_region}:${var.current_aws_account_id}:log-group:/aws/lambda/${var.lambda_function_name}:*"
+          "Resource" : "arn:aws:logs:${var.aws_region}:${var.current_aws_account_id}:log-group:/aws/lambda/${var.function_name}:*"
         },
         {
           "Action" : [
@@ -50,9 +50,9 @@ resource "aws_iam_role_policy" "lambda_policy" {
           ]
         },
         {
-          "Effect": "Allow",
-          "Action": "dynamodb:PutItem",
-          "Resource": var.dynamodb_cards_table_arn
+          "Effect" : "Allow",
+          "Action" : "dynamodb:PutItem",
+          "Resource" : var.dynamodb_cards_table_arn
         }
       ]
     }

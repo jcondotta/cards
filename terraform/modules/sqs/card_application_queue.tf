@@ -4,7 +4,7 @@ resource "aws_sqs_queue" "card_application_queue" {
   visibility_timeout_seconds = var.card_application_queue_visibility_timeout_seconds
   message_retention_seconds  = var.card_application_queue_message_retention_seconds
   delay_seconds              = var.card_application_queue_delay_seconds
-  receive_wait_time_seconds =  var.card_application_queue_receive_wait_time_seconds
+  receive_wait_time_seconds  = var.card_application_queue_receive_wait_time_seconds
 
   redrive_policy = jsonencode(
     {

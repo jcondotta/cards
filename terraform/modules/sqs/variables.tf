@@ -16,13 +16,13 @@ variable "card_application_queue_name" {
 variable "card_application_queue_visibility_timeout_seconds" {
   description = "The amount of time (in seconds) that a message is hidden from other consumers after it is retrieved by a consumer."
   type        = number
-  default     = 30  # Default visibility timeout is 30 seconds
+  default     = 30 # Default visibility timeout is 30 seconds
 }
 
 variable "card_application_queue_message_retention_seconds" {
   description = "The length of time (in seconds) that Amazon SQS retains a message (minimum 60 seconds, maximum 1209600 seconds or 14 days)."
   type        = number
-  default     = 345600  # Default retention period is 4 days
+  default     = 345600 # Default retention period is 4 days
 }
 
 variable "card_application_queue_delay_seconds" {
@@ -52,7 +52,7 @@ variable "card_application_dlq_name" {
 variable "card_application_dlq_message_retention_seconds" {
   description = "The length of time (in seconds) that Amazon SQS retains a message (minimum 60 seconds, maximum 1209600 seconds or 14 days)."
   type        = number
-  default     = 1209600  # (14 days)
+  default     = 1209600 # (14 days)
 }
 
 variable "tags" {

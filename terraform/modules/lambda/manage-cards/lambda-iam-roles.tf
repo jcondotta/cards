@@ -39,20 +39,20 @@ resource "aws_iam_role_policy" "lambda_policy" {
           "Resource" : "arn:aws:logs:${var.aws_region}:${var.current_aws_account_id}:log-group:/aws/lambda/${var.lambda_function_name}:*"
         },
         {
-          "Effect": "Allow",
-          "Action": [
+          "Effect" : "Allow",
+          "Action" : [
             "dynamodb:PutItem",
             "dynamodb:GetItem"
           ],
-          "Resource": var.dynamodb_cards_table_arn
+          "Resource" : var.dynamodb_cards_table_arn
         },
         {
-          "Effect": "Allow",
-          "Action": [
+          "Effect" : "Allow",
+          "Action" : [
             "sqs:SendMessage",
             "sqs:GetQueueUrl"
           ],
-          "Resource": var.sqs_card_application_queue_arn
+          "Resource" : var.sqs_card_application_queue_arn
         }
       ]
     }
