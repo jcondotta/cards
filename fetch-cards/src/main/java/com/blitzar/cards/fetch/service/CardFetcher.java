@@ -29,10 +29,14 @@ public class CardFetcher implements DataFetcher<CardDTO> {
     }
 
     @Override
-    public CardDTO get(DataFetchingEnvironment fetchingEnvironment) throws Exception {
+    public CardDTO get(DataFetchingEnvironment fetchingEnvironment) {
         String cardId = fetchingEnvironment.getArgument("cardId");
 
         try {
+            if(StringUtils.isBlank(cardId)){
+                throw new GraphQLException("card.cardId.notBlank");
+            }
+
             if(StringUtils.isNotBlank(cardId)){
                 UUID.fromString(cardId);
             }
@@ -42,7 +46,7 @@ public class CardFetcher implements DataFetcher<CardDTO> {
         }
 
         logger.info("[CardId={}] Attempting to fetch card", cardId);
-        var key = Key.builder().partitionValue(cardId.toString()).build();
+        var key = Key.builder().partitionValue(cardId).build();
 
         var card = dynamoDbTable.getItem(key);
         if (Objects.isNull(card)) {

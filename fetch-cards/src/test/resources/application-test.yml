@@ -1,0 +1,24 @@
+micronaut:
+  banner: true
+  application:
+    name: fetch-cards
+  server:
+    port: 8073
+
+aws:
+  dynamodb:
+    endpoint: ${AWS_DYNAMODB_ENDPOINT}
+    tables:
+      cards:
+        table-name: 'cards-test'
+        global-secondary-indexes:
+          cards-by-bank-account-id:
+            name: 'cards-by-bank-account-id-gsi-test'
+
+  sqs:
+    endpoint: ${AWS_SQS_ENDPOINT}
+    queues:
+      card-application-queue:
+        name: 'card-application-test'
+      card-application-dead-letter-queue:
+        name: 'card-application-dlq-test'

@@ -26,7 +26,7 @@ public record LastEvaluatedKey(
         Map<String, AttributeValue> exclusiveStartKey = new HashMap<>();
 
         exclusiveStartKey.put("cardId", AttributeValue.builder()
-                .s(this.cardId.toString())
+                .s(cardId.toString())
                 .build());
 
         return exclusiveStartKey;

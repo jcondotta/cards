@@ -38,32 +38,33 @@ public class CardsFetcher implements DataFetcher<List<CardDTO>> {
 
     @Override
     public List<CardDTO> get(DataFetchingEnvironment fetchingEnvironment) throws Exception {
-        String bankAccountIdStr = fetchingEnvironment.getArgument("bankAccountId");
+        String bankAccountId = fetchingEnvironment.getArgument("bankAccountId");
 
-        if (StringUtils.isBlank(bankAccountIdStr)) {
-            throw new GraphQLException("card.bankAccountId.notNull");
+        if (StringUtils.isBlank(bankAccountId)) {
+            throw new GraphQLException("card.bankAccountId.notBlank");
         }
 
-        UUID bankAccountId;
         try {
-            bankAccountId = UUID.fromString(bankAccountIdStr);
+            UUID.fromString(bankAccountId);
         } catch (IllegalArgumentException e) {
             throw new GraphQLException("Invalid bank account ID format", e);
         }
 
-        var queryConditional = QueryConditional.keyEqualTo(builder -> builder.partitionValue(bankAccountId.toString()).build());
-        logger.info("[BankAccountId={}] Attempting to fetch cards with limit: {}", bankAccountId);
+        var queryConditional = QueryConditional.keyEqualTo(builder -> builder.partitionValue(bankAccountId).build());
+        logger.info("[BankAccountId={}] Attempting to fetch cards", bankAccountId);
 
         QueryEnhancedRequest queryRequest = QueryEnhancedRequest.builder()
                 .queryConditional(queryConditional)
                 .build();
 
-        final SdkIterable<Page<Card>> queryResult = dynamoDbIndex.query(queryRequest);
-        List<CardDTO> cards = new ArrayList<>();
+        List<Page<Card>> paginatedCards = dynamoDbIndex.query(queryRequest)
+                .stream()
+                .toList();
 
-        for (Page<Card> page : queryResult) {
-            cards.addAll(page.items().stream().map(CardDTO::new).collect(Collectors.toList()));
-        }
+        List<CardDTO> cards = paginatedCards.stream()
+                .flatMap(page -> page.items().stream())
+                .map(CardDTO::new)
+                .collect(Collectors.toList());
 
         logger.info("[BankAccountId={}] Card(s) found: {}", bankAccountId, cards.size());
         return cards;
