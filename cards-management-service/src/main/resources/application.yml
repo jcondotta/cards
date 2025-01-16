@@ -1,0 +1,37 @@
+micronaut:
+  application:
+    name: manage-cards
+  server:
+    port: 8072
+
+  jms:
+    sqs:
+      enabled: true
+
+aws:
+  access-key-id: ${AWS_ACCESS_KEY_ID}
+  secret-key: ${AWS_SECRET_ACCESS_KEY}
+  region: ${AWS_DEFAULT_REGION}
+
+  dynamodb:
+    endpoint: ${AWS_DYNAMODB_ENDPOINT:}
+    tables:
+      cards:
+        table-name: ${AWS_DYNAMODB_CARDS_TABLE_NAME}
+        global-secondary-indexes:
+          cards-by-bank-account-id:
+            name: ${AWS_DYNAMODB_CARDS_BY_BANK_ACCOUNT_ID_GSI_NAME}
+            read-capacity-units: ${AWS_DYNAMODB_CARDS_BY_BANK_ACCOUNT_ID_GSI_READ_CAPACITY_UNITS:2}
+            write-capacity-units: ${AWS_DYNAMODB_CARDS_BY_BANK_ACCOUNT_ID_GSI_WRITE_CAPACITY_UNITS:2}
+  sqs:
+    endpoint: ${AWS_SQS_ENDPOINT:}
+
+    card-application-queue:
+      name: ${AWS_SQS_CARD_APPLICATION_QUEUE_NAME}
+      visibility-timeout: ${AWS_SQS_CARD_APPLICATION_VISIBILITY_TIMEOUT:1}
+      receive-message-wait-time-seconds: ${AWS_SQS_CARD_APPLICATION_RECEIVE_MESSAGE_WAIT_TIME_SECONDS:1}
+      message-retention-period-seconds: ${AWS_SQS_CARD_APPLICATION_MESSAGE_RETENTION_PERIOD_SECONDS:1}
+
+    card-application-dlq:
+      name: ${AWS_SQS_CARD_APPLICATION_DLQ_NAME}
+      message-retention-period-seconds: ${AWS_SQS_CARD_APPLICATION_DLQ_MESSAGE_RETENTION_PERIOD_SECONDS:1100000}
