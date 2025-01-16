@@ -1,13 +1,13 @@
-package com.blitzar.cards.application.service;
+package com.jcondotta.cards.add.service;
 
-import com.blitzar.cards.argument_provider.BlankAndNonPrintableCharactersArgumentProvider;
-import com.blitzar.cards.argument_provider.security.ThreatInputArgumentProvider;
-import com.blitzar.cards.domain.Card;
-import com.blitzar.cards.factory.ClockTestFactory;
-import com.blitzar.cards.factory.ValidatorTestFactory;
-import com.blitzar.cards.helper.TestBankAccount;
-import com.blitzar.cards.helper.TestCardholder;
-import com.blitzar.cards.web.events.request.AddCardRequest;
+import com.jcondotta.cards.core.argument_provider.BlankAndNonPrintableCharactersArgumentProvider;
+import com.jcondotta.cards.core.argument_provider.security.ThreatInputArgumentProvider;
+import com.jcondotta.cards.core.domain.Card;
+import com.jcondotta.cards.core.factory.ClockTestFactory;
+import com.jcondotta.cards.core.factory.ValidatorTestFactory;
+import com.jcondotta.cards.core.helper.TestBankAccount;
+import com.jcondotta.cards.core.helper.TestCardholder;
+import com.jcondotta.cards.core.request.AddCardRequest;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.apache.commons.lang3.RandomStringUtils;

@@ -8,21 +8,21 @@
         <version>0.1</version>
     </parent>
 
-    <artifactId>add-cards</artifactId>
+    <artifactId>cards-add-service</artifactId>
     <modelVersion>4.0.0</modelVersion>
     <packaging>${packaging}</packaging>
 
     <properties>
         <micronaut.runtime>lambda</micronaut.runtime>
         <packaging>jar</packaging>
-        <exec.mainClass>com.blitzar.cards.application.web.events.CardApplicationEventHandler</exec.mainClass>
+        <exec.mainClass>com.jcondotta.cards.add.web.events.CardApplicationEventHandler</exec.mainClass>
     </properties>
 
     <dependencies>
         <!-- Core dependencies -->
         <dependency>
             <groupId>com.blitzar</groupId>
-            <artifactId>core-cards</artifactId>
+            <artifactId>cards-core-service</artifactId>
             <version>0.1</version>
         </dependency>
 
@@ -48,7 +48,7 @@
         <!-- Test dependencies -->
         <dependency>
             <groupId>com.blitzar</groupId>
-            <artifactId>core-cards</artifactId>
+            <artifactId>cards-core-service</artifactId>
             <version>0.1</version>
             <type>test-jar</type>
             <scope>test</scope>

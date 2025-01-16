@@ -1,8 +1,8 @@
-package com.blitzar.cards.application.web.events;
+package com.jcondotta.cards.add.web.events;
 
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
-import com.blitzar.cards.application.service.AddCardService;
-import com.blitzar.cards.web.events.request.AddCardRequest;
+import com.jcondotta.cards.add.service.AddCardService;
+import com.jcondotta.cards.core.request.AddCardRequest;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.function.aws.MicronautRequestHandler;
 import io.micronaut.json.JsonMapper;

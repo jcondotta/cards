@@ -1,14 +1,14 @@
-package com.blitzar.cards.application.web.events;
+package com.jcondotta.cards.add.web.events;
 
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
-import com.blitzar.cards.argument_provider.BlankAndNonPrintableCharactersArgumentProvider;
-import com.blitzar.cards.argument_provider.security.ThreatInputArgumentProvider;
-import com.blitzar.cards.container.LocalStackTestContainer;
-import com.blitzar.cards.domain.Card;
-import com.blitzar.cards.helper.CardTablePurgeService;
-import com.blitzar.cards.helper.TestBankAccount;
-import com.blitzar.cards.helper.TestCardholder;
-import com.blitzar.cards.web.events.request.AddCardRequest;
+import com.jcondotta.cards.core.argument_provider.BlankAndNonPrintableCharactersArgumentProvider;
+import com.jcondotta.cards.core.argument_provider.security.ThreatInputArgumentProvider;
+import com.jcondotta.cards.core.container.LocalStackTestContainer;
+import com.jcondotta.cards.core.domain.Card;
+import com.jcondotta.cards.core.helper.CardTablePurgeService;
+import com.jcondotta.cards.core.helper.TestBankAccount;
+import com.jcondotta.cards.core.helper.TestCardholder;
+import com.jcondotta.cards.core.request.AddCardRequest;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.json.JsonMapper;

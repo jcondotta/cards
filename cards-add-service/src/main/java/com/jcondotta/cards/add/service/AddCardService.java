@@ -1,7 +1,7 @@
-package com.blitzar.cards.application.service;
+package com.jcondotta.cards.add.service;
 
-import com.blitzar.cards.domain.Card;
-import com.blitzar.cards.web.events.request.AddCardRequest;
+import com.jcondotta.cards.core.domain.Card;
+import com.jcondotta.cards.core.request.AddCardRequest;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.validation.ConstraintViolationException;
@@ -13,7 +13,6 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 @Singleton
@@ -54,7 +53,7 @@ public class AddCardService {
         card.setDailyPaymentLimit(AddCardRequest.DEFAULT_DAILY_PAYMENT_LIMIT);
         card.setCreatedAt(LocalDateTime.now(currentInstant));
         card.setExpirationDate(LocalDateTime.now(currentInstant)
-                .plus(AddCardRequest.DEFAULT_YEAR_PERIOD_EXPIRATION_DATE, ChronoUnit.YEARS));
+                .plusYears(AddCardRequest.DEFAULT_YEAR_PERIOD_EXPIRATION_DATE));
 
         dynamoDbTable.putItem(card);
 
