@@ -16,10 +16,10 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>core-cards</module>
-        <module>add-cards</module>
-        <module>manage-cards</module>
-        <module>fetch-cards</module>
+        <module>cards-core-service</module>
+        <module>cards-add-service</module>
+        <module>cards-management-service</module>
+        <module>cards-query-service</module>
     </modules>
 
     <properties>
