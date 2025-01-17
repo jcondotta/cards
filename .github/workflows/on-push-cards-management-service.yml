@@ -2,8 +2,9 @@ name: On Push - CI pipeline
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
+    paths:
+      - 'cards-management-service/**'
+      - 'cards-core-service/**'
     branches: [ "main" ]
 
 jobs:
@@ -26,7 +27,7 @@ jobs:
           mvn clean package -pl cards-management-service -am --batch-mode
 
       - name: Upload Unit Test Coverage Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v3x
         with:
           name: cards-management-jacoco-unit-tests-exec
           path: target/jacoco-unit-tests.exec
