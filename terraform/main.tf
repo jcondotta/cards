@@ -42,13 +42,13 @@ module "sqs" {
   card_application_dlq_name   = "card-application-dlq-${var.environment}"
 }
 
-module "add_cards_lambda" {
-  source = "./modules/compute/lambda/add-cards"
+module "cards_add_service_lambda" {
+  source = "./modules/compute/lambda/cards-add-service"
 
   aws_region             = var.aws_region
   current_aws_account_id = data.aws_caller_identity.current.account_id
 
-  function_name = "add-cards-lambda-${var.environment}"
+  function_name = "cards-add-service-${var.environment}"
   memory_size   = 1024
   timeout       = 15
   runtime       = "java21"

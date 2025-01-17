@@ -3,13 +3,13 @@ resource "aws_security_group" "ec2_security_group" {
   description = "Allow SSH and HTTP/HTTPS access to the EC2 instance"
   vpc_id      = var.vpc_id
 
-  # ingress {
-  #   description = "Allow SSH from a specific IP (e.g., admin access)"
-  #   from_port   = 22
-  #   to_port     = 22
-  #   protocol    = "tcp"
-  #   cidr_blocks = ["0.0.0.0/32"]
-  # }
+  ingress {
+    description = "Allow SSH from a specific IP (e.g., admin access)"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["79.155.42.95/32"]
+  }
 
   ingress {
     description = "Allow traffic from Load Balancer on port 8073"
