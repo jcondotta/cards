@@ -116,7 +116,7 @@ jobs:
       - name: Download Test Coverage Report
         uses: actions/download-artifact@v3
         with:
-          name: jacoco-test-report
+          name: cards-management-jacoco-test-report
           path: cards-management-service/target/site/jacoco
 
       - name: Cache SonarCloud packages
