@@ -1,16 +1,17 @@
-name: On Push - CI pipeline
+name: On Push - CI Pipeline
 
 on:
   push:
     paths:
       - 'cards-management-service/**'
       - 'cards-core-service/**'
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
-
   build-and-test:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v3
@@ -25,9 +26,11 @@ jobs:
       - name: Compile and Run Unit Tests with JaCoCo
         run: |
           mvn clean package -pl cards-management-service -am --batch-mode
+        env:
+          MAVEN_OPTS: '-Dmaven.repo.local=${{ runner.temp }}/.m2/repository'
 
       - name: Upload Unit Test Coverage Report
-        uses: actions/upload-artifact@v3x
+        uses: actions/upload-artifact@v3
         with:
           name: cards-management-jacoco-unit-tests-exec
           path: cards-management-service/target/jacoco-unit-tests.exec
