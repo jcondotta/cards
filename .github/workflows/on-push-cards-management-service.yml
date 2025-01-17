@@ -25,9 +25,10 @@ jobs:
 
       - name: Compile and Run Unit Tests with JaCoCo
         run: |
-          mvn clean package -pl cards-management-service -am --batch-mode
-        env:
-          MAVEN_OPTS: '-Dmaven.repo.local=${{ runner.temp }}/.m2/repository'
+          mvn clean test -pl cards-management-service -am --batch-mode
+
+      - name: Debug JaCoCo File Generation
+        run: ls -al cards-management-service/target
 
       - name: Upload Unit Test Coverage Report
         uses: actions/upload-artifact@v3
