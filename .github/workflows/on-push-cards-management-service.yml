@@ -30,4 +30,4 @@ jobs:
         uses: actions/upload-artifact@v3x
         with:
           name: cards-management-jacoco-unit-tests-exec
-          path: target/jacoco-unit-tests.exec
+          path: cards-management-service/target/jacoco-unit-tests.exec
