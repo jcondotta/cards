@@ -131,7 +131,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
           mvn package -DskipUnitTests=true -pl cards-management-service -am sonar:sonar \
-            -Dsonar.projectKey=jcondotta_cards-management-service \
+            -Dsonar.projectKey=jcondotta_cards \
             -Dsonar.organization=jcondotta \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
