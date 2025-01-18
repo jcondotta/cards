@@ -2,14 +2,15 @@ name: On Push - CI Pipeline
 
 on:
   push:
-#    paths:
-#      - 'cards-management-service/**'
-#      - 'cards-core-service/**'
     branches:
       - main
 
 env:
   LOCALSTACK_VERSION: "3.7.0"
+  AWS_REGION: "us-east-1"
+  ECR_PUBLIC_URI: "public.ecr.aws/e0g3c1r4/jcondotta/cards-management-service"
+  ECR_REPOSITORY: "jcondotta/cards-management-service"
+  IMAGE_TAG: "latest"
 
 jobs:
   build-and-test:
@@ -26,113 +27,32 @@ jobs:
           java-version: 21
           cache: maven
 
-      - name: Compile and Run Unit Tests with JaCoCo
+      - name: Build JAR with Maven
         run: |
-          mvn clean test -pl cards-management-service -am --batch-mode
+          mvn clean package -pl cards-management-service -am --batch-mode
 
-#      - name: Upload Unit Test Coverage Report
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: cards-management-jacoco-unit-tests-exec
-#          path: cards-management-service/target/jacoco-unit-tests.exec
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
 
-#  # Phase 2: Setup Docker Images and Run Integration Tests
-#  integration-tests:
-#    runs-on: ubuntu-latest
-#    needs: build-and-test
-#    timeout-minutes: 20
-#    steps:
-#      - name: Checkout Source Code
-#        uses: actions/checkout@v3
-#
-#      - name: Set up JDK and Cache Maven Dependencies
-#        uses: actions/setup-java@v3
-#        with:
-#          distribution: 'corretto'
-#          java-version: 21
-#          cache: maven
-#
-#      - name: Download Unit Test Coverage Report
-#        uses: actions/download-artifact@v3
-#        with:
-#          name: cards-management-jacoco-unit-tests-exec
-#          path: cards-management-service/target/
-#
-#      - name: Cache LocalStack Docker image
-#        id: cache-localstack
-#        uses: actions/cache@v3
-#        with:
-#          path: ~/.docker-cache/localstack
-#          key: ${{ runner.os }}-localstack-${{ env.LOCALSTACK_VERSION }}
-#
-#      - name: Load or Pull LocalStack Docker image
-#        run: |
-#          if [ -f ~/.docker-cache/localstack/localstack.tar ]; then
-#            echo "Loading LocalStack Docker image from cache..."
-#            docker load -i ~/.docker-cache/localstack/localstack.tar
-#          else
-#            echo "LocalStack image not found in cache, pulling from Docker Hub..."
-#            docker pull localstack/localstack:${{ env.LOCALSTACK_VERSION }}
-#            echo "Saving LocalStack image to cache..."
-#
-#            mkdir -p ~/.docker-cache/localstack
-#            docker save localstack/localstack:${{ env.LOCALSTACK_VERSION }} -o ~/.docker-cache/localstack/localstack.tar
-#          fi
-#
-#      - name: Start LocalStack for Integration Tests
-#        run: |
-#          docker run -d --name localstack \
-#            -p 127.0.0.1:4566:4566 \
-#            -e SERVICES=dynamodb \
-#            localstack/localstack:3.7.0
-#
-#      - name: Run Integration Tests with JaCoCo
-#        run: |
-#          mvn clean verify -DskipUnitTests=true -pl cards-management-service -am --batch-mode
-#
-#      - name: Upload JaCoCo Test Coverage Report
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: cards-management-jacoco-test-report
-#          path: cards-management-service/target/site/jacoco/jacoco.xml
+      - name: Log in to Amazon ECR Public
+        run: |
+          aws ecr-public get-login-password --region ${{ env.AWS_REGION }} \
+            | docker login --username AWS --password-stdin public.ecr.aws
 
-#  # Phase 3: SonarCloud Analysis
-#  sonarcloud-analysis:
-#    runs-on: ubuntu-latest
-#    needs: integration-tests
-#    steps:
-#      - name: Checkout Source Code
-#        uses: actions/checkout@v3
-#        with:
-#          fetch-depth: 0
-#
-#      - name: Set up JDK and Cache Maven Dependencies
-#        uses: actions/setup-java@v3
-#        with:
-#          distribution: 'corretto'
-#          java-version: 21
-#          cache: maven
-#
-#      - name: Download Test Coverage Report
-#        uses: actions/download-artifact@v3
-#        with:
-#          name: cards-management-jacoco-test-report
-#          path: cards-management-service/target/site/jacoco
-#
-#      - name: Cache SonarCloud packages
-#        uses: actions/cache@v4
-#        with:
-#          path: ~/.sonar/cache
-#          key: ${{ runner.os }}-sonar
-#          restore-keys: ${{ runner.os }}-sonar
-#
-#      - name: Run SonarCloud Analysis
-#        env:
-#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-#        run: |
-#          mvn package -DskipUnitTests=true -pl cards-management-service -am sonar:sonar \
-#            -Dsonar.projectKey=jcondotta_cards \
-#            -Dsonar.organization=jcondotta \
-#            -Dsonar.host.url=https://sonarcloud.io \
-#            -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
-#            -Dsonar.coverage.jacoco.xmlReportPaths=cards-management-service/target/site/jacoco/jacoco.xml
+      - name: Build, Tag, and Push the Docker image
+        run: |
+          # Navigate to the directory containing your Dockerfile
+          cd cards-management-service
+          
+          # Build the Docker image
+          docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
+          
+          # Tag it for the public ECR repository
+          docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_PUBLIC_URI:$IMAGE_TAG
+          
+          # Push to Public ECR
+          docker push $ECR_PUBLIC_URI:$IMAGE_TAG
