@@ -42,6 +42,13 @@ module "sqs" {
   card_application_dlq_name   = "card-application-dlq-${var.environment}"
 }
 
+module "ecs_cards_management_service" {
+  source = "./modules/compute/ecs/cards-management-service"
+
+  vpc_id            = module.networking.vpc_id
+  public_subnet_ids = module.networking.public_subnet_ids
+}
+
 module "cards_add_service_lambda" {
   source = "./modules/compute/lambda/cards-add-service"
 
