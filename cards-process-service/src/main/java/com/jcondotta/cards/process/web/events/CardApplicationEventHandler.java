@@ -1,7 +1,7 @@
-package com.jcondotta.cards.add.web.events;
+package com.jcondotta.cards.process.web.events;
 
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
-import com.jcondotta.cards.add.service.AddCardService;
+import com.jcondotta.cards.process.service.AddCardService;
 import com.jcondotta.cards.core.request.AddCardRequest;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.function.aws.MicronautRequestHandler;

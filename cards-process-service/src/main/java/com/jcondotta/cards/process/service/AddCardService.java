@@ -1,4 +1,4 @@
-package com.jcondotta.cards.add.service;
+package com.jcondotta.cards.process.service;
 
 import com.jcondotta.cards.core.domain.Card;
 import com.jcondotta.cards.core.request.AddCardRequest;

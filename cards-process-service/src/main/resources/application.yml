@@ -27,5 +27,3 @@ aws:
     queues:
       card-application-queue:
         name: ${AWS_SQS_CARD_APPLICATION_QUEUE_NAME}
-      card-application-dead-letter-queue:
-        name: ${AWS_SQS_CARD_APPLICATION_DLQ_NAME}

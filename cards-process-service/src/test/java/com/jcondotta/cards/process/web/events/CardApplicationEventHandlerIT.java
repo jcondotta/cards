@@ -1,4 +1,4 @@
-package com.jcondotta.cards.add.web.events;
+package com.jcondotta.cards.process.web.events;
 
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.jcondotta.cards.core.argument_provider.BlankAndNonPrintableCharactersArgumentProvider;
