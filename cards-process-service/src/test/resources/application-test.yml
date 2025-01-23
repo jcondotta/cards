@@ -8,9 +8,7 @@ aws:
     tables:
       cards:
         table-name: 'cards-test'
-        global-secondary-indexes:
-          cards-by-bank-account-id:
-            name: 'cards-by-bank-account-id-gsi-test'
+
   sqs:
     endpoint: ${AWS_SQS_ENDPOINT}
     queues:

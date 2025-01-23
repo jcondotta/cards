@@ -15,15 +15,10 @@ aws:
   region: ${AWS_DEFAULT_REGION}
 
   dynamodb:
-    endpoint: ${AWS_DYNAMODB_ENDPOINT:}
     tables:
       cards:
         table-name: ${AWS_DYNAMODB_CARDS_TABLE_NAME}
-        global-secondary-indexes:
-          cards-by-bank-account-id:
-            name: ${AWS_DYNAMODB_CARDS_BY_BANK_ACCOUNT_ID_GSI_NAME}
   sqs:
-    endpoint: ${AWS_SQS_ENDPOINT:}
     queues:
       card-application-queue:
         name: ${AWS_SQS_CARD_APPLICATION_QUEUE_NAME}
