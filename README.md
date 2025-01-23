@@ -6,7 +6,7 @@ This project is part of a microservice architecture responsible for managing car
 
 ### Languages & Frameworks:
 
-- **Java 17**: Core programming language.
+- **Java 21**: Core programming language.
 - **Micronaut 4.5.0+**: Framework used to build the microservice with lightweight, fast startup times and cloud-native capabilities.
 - **GraphQL**: Used in the query-cards-service for efficient and flexible querying of card-related data, allowing clients to request only the data they need.
 
