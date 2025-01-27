@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>cards</artifactId>
-        <groupId>com.blitzar</groupId>
+        <groupId>com.jcondotta</groupId>
         <version>0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -22,7 +22,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.blitzar</groupId>
+            <groupId>com.jcondotta</groupId>
             <artifactId>cards-core-service</artifactId>
             <version>0.1</version>
         </dependency>
@@ -80,7 +80,7 @@
 
         <!-- Test dependencies -->
         <dependency>
-            <groupId>com.blitzar</groupId>
+            <groupId>com.jcondotta</groupId>
             <artifactId>cards-core-service</artifactId>
             <version>0.1</version>
             <type>test-jar</type>
@@ -215,7 +215,7 @@
                         </path>
                     </annotationProcessorPaths>
                     <compilerArgs>
-                        <arg>-Amicronaut.processing.group=com.blitzar.cards.fetch</arg>
+                        <arg>-Amicronaut.processing.group=com.jcondotta.cards.fetch</arg>
                         <arg>-Amicronaut.processing.module=fetch-cards</arg>
                     </compilerArgs>
                 </configuration>

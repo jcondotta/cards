@@ -1,8 +1,8 @@
 package com.jcondotta.cards.query.factory;
 
+import com.jcondotta.cards.query.exception_handler.GraphQLExceptionHandler;
 import com.jcondotta.cards.query.service.CardFetcher;
 import com.jcondotta.cards.query.service.CardsFetcher;
-import com.jcondotta.cards.query.exception_handler.GraphQLExceptionHandler;
 import graphql.GraphQL;
 import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.RuntimeWiring;

@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
-import static io.swagger.v3.oas.annotations.media.Schema.*;
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 
 @Serdeable
 @Schema(description = "A DTO representing a list of cards with pagination details.")

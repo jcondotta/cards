@@ -1,6 +1,7 @@
 package com.jcondotta.cards.query.listener;
 
 import com.jcondotta.cards.core.domain.Card;
+import io.micronaut.context.annotation.Value;
 import io.micronaut.context.event.BeanCreatedEvent;
 import io.micronaut.context.event.BeanCreatedEventListener;
 import io.micronaut.core.annotation.NonNull;
@@ -17,6 +18,9 @@ public class DynamoDBTableCardCreatedEventListener implements BeanCreatedEventLi
 
     private static final Logger logger = LoggerFactory.getLogger(DynamoDBTableCardCreatedEventListener.class);
 
+    @Value("${aws.dynamodb.tables.cards.global-secondary-indexes.cards-by-bank-account-id.name}")
+    String cardsByBankAccountIdIndexName;
+
     @Override
     public DynamoDbTable<Card> onCreated(@NonNull BeanCreatedEvent<DynamoDbTable<Card>> event){
         var dynamoDBTable = event.getBean();
@@ -29,16 +33,10 @@ public class DynamoDBTableCardCreatedEventListener implements BeanCreatedEventLi
 
             dynamoDBTable.createTable(builder -> builder
                     .globalSecondaryIndices(gsiBuilder -> gsiBuilder
-                            .indexName("cards-by-bank-account-id-gsi")
+                            .indexName(cardsByBankAccountIdIndexName)
                             .projection(Projection.builder()
                                     .projectionType(ProjectionType.ALL)
-                                    .build()
-                            )
-                            .provisionedThroughput(provisionedThroughputBuilder -> provisionedThroughputBuilder
-                                    .readCapacityUnits(3L)
-                                    .writeCapacityUnits(3L)
-                                    .build()
-                            )
+                                    .build())
                     )
             );
         }
