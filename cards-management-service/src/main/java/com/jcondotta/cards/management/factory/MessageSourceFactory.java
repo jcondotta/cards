@@ -13,14 +13,12 @@ public class MessageSourceFactory {
 
     @Singleton
     public MessageSource messageSource() {
-        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource("i18n/messages/messages", Locale.ENGLISH);
-        return messageSource;
+        return new ResourceBundleMessageSource("i18n/messages/messages", Locale.ENGLISH);
     }
 
     @Singleton
     @Named("exceptionMessageSource")
     public MessageSource exceptionMessageSource() {
-        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource("i18n/exceptions/exceptions", Locale.ENGLISH);
-        return messageSource;
+        return new ResourceBundleMessageSource("i18n/exceptions/exceptions", Locale.ENGLISH);
     }
 }

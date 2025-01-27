@@ -58,7 +58,7 @@ class ActivateCardControllerIT implements LocalStackTestContainer {
     public void beforeEach(RequestSpecification requestSpecification) {
         this.requestSpecification = requestSpecification
                 .contentType(ContentType.JSON)
-                .basePath(ManageCardAPIConstants.CARD_ID_API_V1_MAPPING);
+                .basePath(CardApiPaths.BY_ID);
     }
 
     @Test

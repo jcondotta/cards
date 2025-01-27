@@ -1,7 +1,7 @@
 package com.jcondotta.cards.management.web.controller;
 
-import com.jcondotta.cards.management.service.AddCardService;
 import com.jcondotta.cards.core.request.AddCardRequest;
+import com.jcondotta.cards.management.service.AddCardService;
 import io.micronaut.context.LocalizedMessageSource;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.HttpResponse;
@@ -19,10 +19,10 @@ import jakarta.inject.Inject;
 
 import java.util.Locale;
 
-import static io.swagger.v3.oas.annotations.media.Schema.*;
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 
 @Validated
-@Controller(CardAPIConstants.CARDS_BASE_PATH_API_V1_MAPPING)
+@Controller(CardApiPaths.BASE_V1_PATH)
 public class AddCardController {
 
     private final AddCardService addCardService;

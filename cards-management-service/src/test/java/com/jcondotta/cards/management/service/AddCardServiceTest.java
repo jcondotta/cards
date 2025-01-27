@@ -1,11 +1,11 @@
 package com.jcondotta.cards.management.service;
 
 import com.jcondotta.cards.core.argument_provider.InvalidStringArgumentProvider;
+import com.jcondotta.cards.core.factory.ValidatorTestFactory;
 import com.jcondotta.cards.core.helper.TestBankAccount;
 import com.jcondotta.cards.core.helper.TestCardholder;
-import com.jcondotta.cards.management.web.CardApplicationEventProducer;
-import com.jcondotta.cards.core.factory.ValidatorTestFactory;
 import com.jcondotta.cards.core.request.AddCardRequest;
+import com.jcondotta.cards.management.web.CardApplicationEventProducer;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +22,8 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class AddCardServiceTest {

@@ -64,7 +64,7 @@ class AddCardControllerIT implements LocalStackTestContainer {
     public void beforeEach(RequestSpecification requestSpecification) {
         this.requestSpecification = requestSpecification
                 .contentType(ContentType.JSON)
-                .basePath(ManageCardAPIConstants.CARDS_BASE_PATH_API_V1_MAPPING);
+                .basePath(CardApiPaths.BASE_V1_PATH);
     }
 
     @PostConstruct

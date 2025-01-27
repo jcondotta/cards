@@ -14,10 +14,10 @@ import jakarta.inject.Inject;
 
 import java.util.UUID;
 
-import static io.swagger.v3.oas.annotations.media.Schema.*;
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
 
 @Validated
-@Controller(ManageCardAPIConstants.CARD_ID_API_V1_MAPPING)
+@Controller(CardApiPaths.BY_ID)
 public class LockCardController {
 
     private final LockCardService lockCardService;

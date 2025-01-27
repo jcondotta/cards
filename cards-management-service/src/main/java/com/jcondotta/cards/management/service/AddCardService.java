@@ -1,7 +1,7 @@
 package com.jcondotta.cards.management.service;
 
-import com.jcondotta.cards.management.web.CardApplicationEventProducer;
 import com.jcondotta.cards.core.request.AddCardRequest;
+import com.jcondotta.cards.management.web.CardApplicationEventProducer;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.validation.ConstraintViolationException;
