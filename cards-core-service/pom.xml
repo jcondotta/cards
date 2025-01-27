@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.blitzar</groupId>
+        <groupId>com.jcondotta</groupId>
         <artifactId>cards</artifactId>
         <version>0.1</version>
     </parent>
 
-    <groupId>com.blitzar</groupId>
+    <groupId>com.jcondotta</groupId>
     <artifactId>cards-core-service</artifactId>
     <packaging>jar</packaging>
 

@@ -5,7 +5,6 @@ import com.jcondotta.cards.core.request.AddCardRequest;
 import net.datafaker.Faker;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 public class CardTestFactory {
@@ -23,16 +22,12 @@ public class CardTestFactory {
         card.setDailyPaymentLimit(AddCardRequest.DEFAULT_DAILY_PAYMENT_LIMIT);
         card.setCreatedAt(LocalDateTime.now(ClockTestFactory.testClockFixedInstant));
         card.setExpirationDate(LocalDateTime.now(ClockTestFactory.testClockFixedInstant)
-                .plus(AddCardRequest.DEFAULT_YEAR_PERIOD_EXPIRATION_DATE, ChronoUnit.YEARS));
+                .plusYears(AddCardRequest.DEFAULT_YEAR_PERIOD_EXPIRATION_DATE));
 
         return card;
     }
 
     public static Card buildCard(UUID bankAccountId, String cardholderName){
         return buildCard(UUID.randomUUID(), bankAccountId, cardholderName);
-    }
-
-    public static Card buildCard(AddCardRequest addCardRequest){
-        return buildCard(UUID.randomUUID(), addCardRequest.bankAccountId(), addCardRequest.cardholderName());
     }
 }
