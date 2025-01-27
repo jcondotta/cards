@@ -1,4 +1,4 @@
-resource "aws_iam_role" "add_cards_lambda_role_exec" {
+resource "aws_iam_role" "process_cards_lambda_role_exec" {
   name = "${var.function_name}-exec-role"
 
   assume_role_policy = jsonencode(
@@ -18,7 +18,7 @@ resource "aws_iam_role" "add_cards_lambda_role_exec" {
 
 resource "aws_iam_role_policy" "lambda_policy" {
   name = "${var.function_name}-policy"
-  role = aws_iam_role.add_cards_lambda_role_exec.id
+  role = aws_iam_role.process_cards_lambda_role_exec.id
 
   policy = jsonencode(
     {
@@ -46,7 +46,6 @@ resource "aws_iam_role_policy" "lambda_policy" {
           "Effect" : "Allow",
           "Resource" : [
             var.sqs_card_application_queue_arn,
-            var.sqs_card_application_dead_letter_queue_arn
           ]
         },
         {

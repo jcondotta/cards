@@ -1,4 +1,4 @@
-resource "aws_route_table" "public_router_tables" {
+resource "aws_route_table" "public_route_tables" {
   for_each = aws_subnet.public_subnets
 
   vpc_id = aws_vpc.this.id
@@ -9,7 +9,7 @@ resource "aws_route_table" "public_router_tables" {
   }
 
   tags = {
-    Name = "cards-public-router-table-${each.key}"
+    Name = "cards-public-route-table-${each.key}"
   }
 }
 
@@ -17,5 +17,5 @@ resource "aws_route_table_association" "public_subnet_associations" {
   for_each = aws_subnet.public_subnets
 
   subnet_id      = each.value.id
-  route_table_id = aws_route_table.public_router_tables[each.key].id
+  route_table_id = aws_route_table.public_route_tables[each.key].id
 }

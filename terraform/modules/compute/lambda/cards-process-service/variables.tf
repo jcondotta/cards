@@ -53,11 +53,6 @@ variable "sqs_card_application_queue_arn" {
   type        = string
 }
 
-variable "sqs_card_application_dead_letter_queue_arn" {
-  description = "The ARN of the card application SQS dead letter queue"
-  type        = string
-}
-
 variable "environment_variables" {
   description = "A key-value map of environment variables for the Lambda function, used to configure dynamic runtime settings."
   type        = map(string)

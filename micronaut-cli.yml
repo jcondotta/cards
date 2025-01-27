@@ -1,5 +1,5 @@
 applicationType: default
-defaultPackage: com.blitzar.cards
+defaultPackage: com.jcondotta.cards
 testFramework: junit
 sourceLanguage: java
 buildTool: maven

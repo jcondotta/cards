@@ -1,8 +1,8 @@
-resource "aws_lambda_function" "add_cards_lambda" {
+resource "aws_lambda_function" "process_cards_lambda" {
   function_name = var.function_name
   runtime       = var.runtime
   handler       = var.handler
-  role          = aws_iam_role.add_cards_lambda_role_exec.arn
+  role          = aws_iam_role.process_cards_lambda_role_exec.arn
   s3_bucket     = var.s3_bucket
   s3_key        = var.s3_key
   memory_size   = var.memory_size
