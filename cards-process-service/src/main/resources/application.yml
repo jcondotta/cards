@@ -1,7 +1,7 @@
 micronaut:
   banner: true
   application:
-    name: add-cards
+    name: cards-process-service
   server:
     port: 8071
 
@@ -10,8 +10,6 @@ micronaut:
       enabled: true
 
 aws:
-  access-key-id: ${AWS_ACCESS_KEY_ID}
-  secret-key: ${AWS_SECRET_ACCESS_KEY}
   region: ${AWS_DEFAULT_REGION}
 
   dynamodb:

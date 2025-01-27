@@ -1,8 +1,6 @@
-micronaut:
-  server:
-    port: 8171
-
 aws:
+  access-key-id: ${AWS_ACCESS_KEY_ID}
+  secret-key: ${AWS_SECRET_ACCESS_KEY}
   dynamodb:
     endpoint: ${AWS_DYNAMODB_ENDPOINT}
     tables:
