@@ -6,6 +6,7 @@ import com.jcondotta.cards.core.exception.ResourceNotFoundException;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.validation.constraints.NotNull;
+import net.logstash.logback.argument.StructuredArguments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @Singleton
 public class CancelCardService {
 
-    private static final Logger logger = LoggerFactory.getLogger(CancelCardService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CancelCardService.class);
 
     private final DynamoDbTable<Card> dynamoDbTable;
 
@@ -27,21 +28,29 @@ public class CancelCardService {
     }
 
     public void cancelCard(@NotNull UUID cardId) {
-        logger.info("[CardId={}] Request received to cancel the card", cardId);
+        LOGGER.info("Request received to cancel the card",
+                StructuredArguments.keyValue("cardId", cardId)
+        );
 
         var key = Key.builder().partitionValue(cardId.toString()).build();
         var card = dynamoDbTable.getItem(key);
 
         if (Objects.isNull(card)) {
-            logger.warn("[CardId={}] Card not found, cancellation request failed", cardId);
+            LOGGER.warn("Card not found, cancellation request failed",
+                    StructuredArguments.keyValue("cardId", cardId)
+            );
             throw new ResourceNotFoundException("card.notFound", cardId);
         }
 
-        logger.info("[CardId={}] Card found. Cancelling the card", cardId);
+        LOGGER.info("Card found. Cancelling the card",
+                StructuredArguments.keyValue("cardId", cardId)
+        );
 
         card.setCardStatus(CardStatus.CANCELLED);
         dynamoDbTable.putItem(card);
 
-        logger.info("[CardId={}] Successfully cancelled the card", cardId);
+        LOGGER.info("Successfully cancelled the card",
+                StructuredArguments.keyValue("cardId", cardId)
+        );
     }
 }

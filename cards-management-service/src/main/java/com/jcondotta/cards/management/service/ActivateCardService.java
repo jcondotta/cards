@@ -6,6 +6,7 @@ import com.jcondotta.cards.core.exception.ResourceNotFoundException;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.validation.constraints.NotNull;
+import net.logstash.logback.argument.StructuredArguments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @Singleton
 public class ActivateCardService {
 
-    private static final Logger logger = LoggerFactory.getLogger(ActivateCardService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActivateCardService.class);
 
     private final DynamoDbTable<Card> dynamoDbTable;
 
@@ -27,21 +28,29 @@ public class ActivateCardService {
     }
 
     public void activateCard(@NotNull UUID cardId) {
-        logger.info("[CardId={}] Received request to activate card", cardId);
+        LOGGER.info("Received request to activate card",
+                StructuredArguments.keyValue("cardId", cardId)
+        );
 
         var key = Key.builder().partitionValue(cardId.toString()).build();
         var card = dynamoDbTable.getItem(key);
 
         if (Objects.isNull(card)) {
-            logger.warn("[CardId={}] Card not found", cardId);
+            LOGGER.warn("Card not found",
+                    StructuredArguments.keyValue("cardId", cardId)
+            );
             throw new ResourceNotFoundException("card.notFound", cardId);
         }
 
-        logger.info("[CardId={}] Card found. Activating the card", cardId);
+        LOGGER.info("Card found. Activating the card",
+                StructuredArguments.keyValue("cardId", cardId)
+        );
 
         card.setCardStatus(CardStatus.ACTIVE);
         dynamoDbTable.putItem(card);
 
-        logger.info("[CardId={}] Successfully activated card", cardId);
+        LOGGER.info("Successfully activated card",
+                StructuredArguments.keyValue("cardId", cardId)
+        );
     }
 }

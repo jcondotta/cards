@@ -6,6 +6,7 @@ import com.jcondotta.cards.core.exception.ResourceNotFoundException;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.validation.constraints.NotNull;
+import net.logstash.logback.argument.StructuredArguments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -17,7 +18,7 @@ import java.util.UUID;
 @Singleton
 public class LockCardService {
 
-    private static final Logger logger = LoggerFactory.getLogger(LockCardService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LockCardService.class);
 
     private final DynamoDbTable<Card> dynamoDbTable;
 
@@ -27,21 +28,29 @@ public class LockCardService {
     }
 
     public void lockCard(@NotNull UUID cardId) {
-        logger.info("[CardId={}] Request received to lock the card", cardId);
+        LOGGER.info("Request received to lock the card",
+                StructuredArguments.keyValue("cardId", cardId)
+        );
 
         var key = Key.builder().partitionValue(cardId.toString()).build();
         var card = dynamoDbTable.getItem(key);
 
         if (Objects.isNull(card)) {
-            logger.warn("[CardId={}] Card not found, locking request failed", cardId);
+            LOGGER.warn("Card not found, locking request failed",
+                    StructuredArguments.keyValue("cardId", cardId)
+            );
             throw new ResourceNotFoundException("card.notFound", cardId);
         }
 
-        logger.info("[CardId={}] Card found. Locking the card", cardId);
+        LOGGER.info("Card found. Locking the card",
+                StructuredArguments.keyValue("cardId", cardId)
+        );
 
         card.setCardStatus(CardStatus.LOCKED);
         dynamoDbTable.putItem(card);
 
-        logger.info("[CardId={}] Successfully locked the card", cardId);
+        LOGGER.info("Successfully locked the card",
+                StructuredArguments.keyValue("cardId", cardId)
+        );
     }
 }

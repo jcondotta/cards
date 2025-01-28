@@ -13,6 +13,7 @@ import io.micronaut.http.server.exceptions.response.ErrorContext;
 import io.micronaut.http.server.exceptions.response.ErrorResponseProcessor;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import net.logstash.logback.argument.StructuredArguments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +43,9 @@ public class ResourceNotFoundExceptionHandler implements ExceptionHandler<Resour
         var errorMessage = messageSource.getMessage(exception.getMessage(), locale, exception.getRejectedIdentifier())
                 .orElse(exception.getMessage());
 
-        logger.error(errorMessage);
+        logger.error(errorMessage,
+                StructuredArguments.keyValue("cardId", exception.getRejectedIdentifier())
+        );
 
         return errorResponseProcessor.processResponse(ErrorContext.builder(request)
                 .cause(exception)

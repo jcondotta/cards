@@ -21,7 +21,7 @@
     <dependencies>
         <!-- Core dependencies -->
         <dependency>
-            <groupId>com.jcondotta</groupId>
+            <groupId>com.jcondotta.cards</groupId>
             <artifactId>cards-core-service</artifactId>
             <version>0.1</version>
         </dependency>
@@ -56,7 +56,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <scope>runtime</scope>
+<!--            <scope>runtime</scope>-->
         </dependency>
 
         <!-- Test dependencies -->
@@ -213,7 +213,7 @@
                     </annotationProcessorPaths>
                     <compilerArgs>
                         <arg>-Amicronaut.processing.group=com.jcondotta.cards</arg>
-                        <arg>-Amicronaut.processing.module=manage-cards</arg>
+                        <arg>-Amicronaut.processing.module=cards-management-service</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>

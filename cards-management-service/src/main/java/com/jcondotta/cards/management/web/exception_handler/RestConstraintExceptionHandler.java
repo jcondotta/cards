@@ -44,13 +44,12 @@ public class RestConstraintExceptionHandler extends ConstraintExceptionHandler {
     public HttpResponse<?> handle(HttpRequest request, ConstraintViolationException exception) {
         var locale = request.getLocale().orElse(Locale.getDefault());
 
-        // Collect all error messages
         List<String> errorMessages = new ArrayList<>();
         for (ConstraintViolation<?> violation : exception.getConstraintViolations()) {
             String message = violation.getMessage();
             String localizedMessage = messageSource.getMessage(message, Locale.getDefault()).orElse(message);
-            errorMessages.add(localizedMessage); // Add each localized message to the list
-            logger.error(localizedMessage); // Log each error message
+            errorMessages.add(localizedMessage);
+            logger.error(localizedMessage);
         }
 
         var responseBody = Map.of(
@@ -62,7 +61,7 @@ public class RestConstraintExceptionHandler extends ConstraintExceptionHandler {
 
         return errorResponseProcessor.processResponse(ErrorContext.builder(request)
                 .cause(exception)
-                .errorMessages(errorMessages) // Pass the list of error messages directly
+                .errorMessages(errorMessages)
                 .build(), HttpResponse.badRequest().body(responseBody));
     }
 }

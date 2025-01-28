@@ -6,13 +6,15 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
+import net.logstash.logback.argument.StructuredArguments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 @Singleton
 public class AddCardService {
 
-    private static final Logger logger = LoggerFactory.getLogger(AddCardService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AddCardService.class);
     private final CardApplicationEventProducer eventProducer;
     private final Validator validator;
 
@@ -23,22 +25,32 @@ public class AddCardService {
     }
 
     public void addCard(AddCardRequest request) {
-        logger.info("[BankAccountId={}, CardholderName={}] Validating card application request",
-                request.bankAccountId(), request.cardholderName());
+        LOGGER.info("Validating card application request",
+                StructuredArguments.keyValue("bankAccountId", request.bankAccountId()),
+                StructuredArguments.keyValue("cardholderName", request.cardholderName())
+        );
 
         var constraintViolations = validator.validate(request);
         if (!constraintViolations.isEmpty()) {
-            logger.warn("[BankAccountId={}, CardholderName={}] Validation failed. Violations: {}",
-                    request.bankAccountId(), request.cardholderName(), constraintViolations);
+            LOGGER.warn("Validation failed. Violations: {}",
+                    constraintViolations,
+                    StructuredArguments.keyValue("bankAccountId", request.bankAccountId()),
+                    StructuredArguments.keyValue("cardholderName", request.cardholderName())
+            );
             throw new ConstraintViolationException(constraintViolations);
         }
 
-        logger.info("[BankAccountId={}, CardholderName={}] Validation passed. Sending card application request to SQS queue",
-                request.bankAccountId(), request.cardholderName());
+        LOGGER.info("Validation passed. Sending card application request to SQS queue",
+                StructuredArguments.keyValue("bankAccountId", request.bankAccountId()),
+                StructuredArguments.keyValue("cardholderName", request.cardholderName())
+        );
 
-        eventProducer.send(request);
+        String traceId = MDC.get("traceId");
+        eventProducer.send(request, traceId);
 
-        logger.info("[BankAccountId={}, CardholderName={}] Successfully sent card application request to SQS",
-                request.bankAccountId(), request.cardholderName());
+        LOGGER.info("Successfully sent card application request to SQS",
+                StructuredArguments.keyValue("bankAccountId", request.bankAccountId()),
+                StructuredArguments.keyValue("cardholderName", request.cardholderName())
+        );
     }
 }

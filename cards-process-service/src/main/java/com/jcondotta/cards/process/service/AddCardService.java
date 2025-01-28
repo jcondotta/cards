@@ -7,6 +7,7 @@ import jakarta.inject.Singleton;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import net.datafaker.Faker;
+import net.logstash.logback.argument.StructuredArguments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
@@ -25,19 +26,27 @@ public class AddCardService {
     private final Validator validator;
 
     @Inject
-    public AddCardService(DynamoDbTable<Card> dynamoDbTable, Clock currentInstant, Validator validator) {
+    public AddCardService(DynamoDbTable<Card> dynamoDbTable,
+                          Clock currentInstant,
+                          Validator validator) {
         this.dynamoDbTable = dynamoDbTable;
         this.currentInstant = currentInstant;
         this.validator = validator;
     }
 
-    public Card addCard(AddCardRequest request){
-        logger.info("[BankAccountId={}, CardholderName={}] Attempting to add a new card", request.bankAccountId(), request.cardholderName());
+    public Card addCard(AddCardRequest request) {
+        logger.info("Attempting to add a new card",
+                StructuredArguments.keyValue("bankAccountId", request.bankAccountId()),
+                StructuredArguments.keyValue("cardholderName", request.cardholderName())
+        );
 
         var constraintViolations = validator.validate(request);
         if (!constraintViolations.isEmpty()) {
-            logger.warn("[BankAccountId={}, CardholderName={}] Validation errors for request. Violations: {}",
-                    request.bankAccountId(), request.cardholderName(), constraintViolations);
+            logger.warn("Validation errors for request. Violations: {}",
+                    constraintViolations,
+                    StructuredArguments.keyValue("bankAccountId", request.bankAccountId()),
+                    StructuredArguments.keyValue("cardholderName", request.cardholderName())
+            );
             throw new ConstraintViolationException(constraintViolations);
         }
 
@@ -57,7 +66,11 @@ public class AddCardService {
 
         dynamoDbTable.putItem(card);
 
-        logger.info("[BankAccountId={}, CardholderName={}] Card saved to DB", request.bankAccountId(), request.cardholderName());
+        logger.info("Card saved to DB",
+                StructuredArguments.keyValue("bankAccountId", request.bankAccountId()),
+                StructuredArguments.keyValue("cardholderName", request.cardholderName())
+        );
+
         logger.debug("Saved Card: {}", card);
 
         return card;

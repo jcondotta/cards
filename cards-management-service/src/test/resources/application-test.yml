@@ -1,6 +1,6 @@
 micronaut:
   server:
-    port: 8171
+    port: 8172
 
 aws:
   access-key-id: ${AWS_ACCESS_KEY_ID}
