@@ -9,6 +9,6 @@ import io.micronaut.messaging.annotation.MessageBody;
 @JMSProducer(SqsConfiguration.CONNECTION_FACTORY_BEAN_NAME)
 public interface CardApplicationEventProducer {
 
-    @Queue(value = "${aws.sqs.queues.card-application-queue.name}")
+    @Queue(value = "card-application-prod")
     void send(@MessageBody AddCardRequest addCardRequest);
 }
