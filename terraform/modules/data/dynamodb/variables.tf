@@ -1,13 +1,3 @@
-# variable "vpc_id" {
-#   type        = string
-#   description = "The ID of the cards VPC"
-# }
-
-variable "allowed_security_group_ids" {
-  description = "The list of security group IDs that are allowed to access the DynamoDB VPC Endpoint"
-  type        = list(string)
-}
-
 variable "cards_table_name" {
   type        = string
   description = "The name of the DynamoDB table for cards"

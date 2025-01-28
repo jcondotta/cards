@@ -1,5 +1,5 @@
 resource "aws_security_group" "ecs_task_security_group" {
-  name_prefix = "ecs_task_security_group"
+  name_prefix = "cards-ecs-task-security-group"
   vpc_id      = var.vpc_id
 
   ingress {
