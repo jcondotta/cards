@@ -47,7 +47,7 @@
 
         <!-- Test dependencies -->
         <dependency>
-            <groupId>com.jcondotta</groupId>
+            <groupId>com.jcondotta.cards</groupId>
             <artifactId>cards-core-service</artifactId>
             <version>0.1</version>
             <type>test-jar</type>
