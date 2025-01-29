@@ -4,12 +4,16 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "management-service/**"
+      - "core-service/**"
+      - ".github/workflows/on-push-cards-management-service.yml"
 
 env:
   LOCALSTACK_VERSION: "3.7.0"
   AWS_REGION: "us-east-1"
-  ECR_PUBLIC_URI: "public.ecr.aws/e0g3c1r4/jcondotta/cards-management-service"
-  ECR_REPOSITORY: "jcondotta/cards-management-service"
+  ECR_PUBLIC_URI: "public.ecr.aws/e0g3c1r4/jcondotta/cards/management-service"
+  ECR_REPOSITORY: "jcondotta/cards/management-service"
   IMAGE_TAG: "latest"
 
 jobs:
@@ -27,9 +31,9 @@ jobs:
           java-version: 21
           cache: maven
 
-      - name: Build JAR with Maven
+      - name: Build JAR with Maven (Only Modified Modules)
         run: |
-          mvn clean package -pl management-service -am --batch-mode
+          mvn clean package -pl management-service,core-service -am --batch-mode
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
@@ -43,7 +47,8 @@ jobs:
           aws ecr-public get-login-password --region ${{ env.AWS_REGION }} \
             | docker login --username AWS --password-stdin public.ecr.aws
 
-      - name: Build, Tag, and Push the Docker image
+      - name: Build, Tag, and Push the Docker image (Only If `management-service/` Changed)
+        if: contains(github.event.head_commit.modified, 'management-service/')
         run: |
           # Navigate to the directory containing your Dockerfile
           cd management-service
