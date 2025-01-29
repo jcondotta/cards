@@ -15,8 +15,6 @@
     <packaging>jar</packaging>
 
     <properties>
-        <micronaut.aot.enabled>false</micronaut.aot.enabled>
-
         <!-- Dependency versions -->
         <micronaut.validation.version>4.6.0</micronaut.validation.version>
         <micronaut.serde.version>2.9.0</micronaut.serde.version>
@@ -31,7 +29,7 @@
         <!-- Test dependency versions -->
         <assertj.version>3.26.0</assertj.version>
         <commons-text.version>1.12.0</commons-text.version>
-        <micronaut-test.version>4.3.0</micronaut-test.version>
+        <micronaut-test.version>4.6.0</micronaut-test.version>
         <mockito.version>5.12.0</mockito.version>
         <junit-jupiter.version>5.10.2</junit-jupiter.version>
         <junit-platform-suite.version>1.8.1</junit-platform-suite.version>

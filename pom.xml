@@ -23,6 +23,7 @@
     </modules>
 
     <properties>
+        <micronaut.aot.enabled>false</micronaut.aot.enabled>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <jdk.version>21</jdk.version>
@@ -133,6 +134,11 @@
                                 <groupId>io.micronaut.validation</groupId>
                                 <artifactId>micronaut-validation-processor</artifactId>
                                 <version>4.6.1</version>
+                            </path>
+                            <path>
+                                <groupId>io.micronaut</groupId>
+                                <artifactId>micronaut-inject</artifactId>
+                                <version>${micronaut.version}</version>
                             </path>
                             <path>
                                 <groupId>io.micronaut</groupId>
