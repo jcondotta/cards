@@ -1,6 +1,5 @@
 package com.jcondotta.cards.management.web;
 
-import io.micronaut.context.annotation.Value;
 import io.micronaut.http.HttpRequest;
 import io.micronaut.http.MutableHttpResponse;
 import io.micronaut.http.annotation.Filter;

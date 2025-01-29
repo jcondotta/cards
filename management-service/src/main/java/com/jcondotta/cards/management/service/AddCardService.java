@@ -9,7 +9,6 @@ import jakarta.validation.Validator;
 import net.logstash.logback.argument.StructuredArguments;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 @Singleton
 public class AddCardService {
@@ -45,8 +44,7 @@ public class AddCardService {
                 StructuredArguments.keyValue("cardholderName", request.cardholderName())
         );
 
-        String traceId = MDC.get("traceId");
-        eventProducer.send(request, traceId);
+        eventProducer.send(request);
 
         LOGGER.info("Successfully sent card application request to SQS",
                 StructuredArguments.keyValue("bankAccountId", request.bankAccountId()),

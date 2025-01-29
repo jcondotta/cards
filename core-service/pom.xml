@@ -20,7 +20,7 @@
         <micronaut.serde.version>2.9.0</micronaut.serde.version>
         <micronaut.aws.version>4.6.0</micronaut.aws.version>
         <micronaut.openapi.annotations.version>6.6.0</micronaut.openapi.annotations.version>
-        <micronaut.jms.version>4.1.0</micronaut.jms.version>
+        <micronaut.jms.version>3.2.0</micronaut.jms.version>
         <logback.version>1.5.16</logback.version>
         <dynamodb-enhanced.version>2.25.2</dynamodb-enhanced.version>
         <datafaker.version>2.4.0</datafaker.version>
