@@ -1,0 +1,31 @@
+<configuration>
+    <!-- Define the root level loggers -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeContext>true</includeContext>
+            <includeMdc>true</includeMdc>
+            <includeStructuredArguments>true</includeStructuredArguments>
+
+            <jsonFormatter class="net.logstash.logback.composite.CompositeJsonFormatter">
+                <prettyPrint>true</prettyPrint>
+            </jsonFormatter>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>logs/app.log</file>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeContext>true</includeContext>
+            <includeMdc>true</includeMdc>
+            <includeStructuredArguments>true</includeStructuredArguments>
+
+            <jsonFormatter class="net.logstash.logback.composite.JsonFormatter">
+                <prettyPrint>true</prettyPrint>
+            </jsonFormatter>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>
