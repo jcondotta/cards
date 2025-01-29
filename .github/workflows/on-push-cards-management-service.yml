@@ -12,8 +12,8 @@ on:
 env:
   LOCALSTACK_VERSION: "3.7.0"
   AWS_REGION: "us-east-1"
-  ECR_PUBLIC_URI: "public.ecr.aws/e0g3c1r4/jcondotta/cards/management-service"
-  ECR_REPOSITORY: "jcondotta/cards/management-service"
+  ECR_PUBLIC_URI: "public.ecr.aws/e0g3c1r4/cards/management-service"
+  ECR_REPOSITORY: "cards/management-service"
   IMAGE_TAG: "latest"
 
 jobs:
