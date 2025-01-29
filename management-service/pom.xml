@@ -212,7 +212,7 @@
                     </annotationProcessorPaths>
                     <compilerArgs>
                         <arg>-Amicronaut.processing.group=com.jcondotta.cards</arg>
-                        <arg>-Amicronaut.processing.module=cards-management-service</arg>
+                        <arg>-Amicronaut.processing.module=management-service</arg>
                     </compilerArgs>
                 </configuration>
             </plugin>

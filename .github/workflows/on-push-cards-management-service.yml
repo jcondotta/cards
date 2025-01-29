@@ -29,7 +29,7 @@ jobs:
 
       - name: Build JAR with Maven
         run: |
-          mvn clean package -pl cards-management-service -am --batch-mode
+          mvn clean package -pl management-service -am --batch-mode
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
@@ -46,7 +46,7 @@ jobs:
       - name: Build, Tag, and Push the Docker image
         run: |
           # Navigate to the directory containing your Dockerfile
-          cd cards-management-service
+          cd management-service
           
           # Build the Docker image
           docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
