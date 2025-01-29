@@ -47,8 +47,7 @@ jobs:
           aws ecr-public get-login-password --region ${{ env.AWS_REGION }} \
             | docker login --username AWS --password-stdin public.ecr.aws
 
-      - name: Build, Tag, and Push the Docker image (Only If `management-service/` Changed)
-        if: contains(github.event.head_commit.modified, 'management-service/')
+      - name: Build, Tag, and Push the Docker image
         run: |
           # Navigate to the directory containing your Dockerfile
           cd management-service
