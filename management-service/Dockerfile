@@ -1,6 +1,9 @@
 # Use Amazon Corretto (OpenJDK) as a base image
 FROM amazoncorretto:21-alpine
 
+# Install curl so that health check commands work
+RUN apk --no-cache add curl
+
 # Set a working directory (optional)
 WORKDIR /app
 
