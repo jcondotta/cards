@@ -12,7 +12,7 @@ on:
 env:
   LOCALSTACK_VERSION: "3.7.0"
   AWS_REGION: "us-east-1"
-  ECR_PUBLIC_URI: "public.ecr.aws/e0g3c1r4/cards/management-service"
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
   ECR_REPOSITORY: "cards/management-service"
   IMAGE_TAG: "latest"
 
@@ -42,24 +42,11 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Log in to Amazon ECR Public
+      - name: Log in to Amazon ECR (Private)
         run: |
-          aws ecr-public get-login-password --region ${{ env.AWS_REGION }} \
-            | docker login --username AWS --password-stdin public.ecr.aws
+          aws ecr get-login-password --region ${{ env.AWS_REGION }} \
+            | docker login --username AWS --password-stdin ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
 
-#      - name: Build, Tag, and Push the Docker image
-#        run: |
-#          # Navigate to the directory containing your Dockerfile
-#          cd management-service
-#
-#          # Build the Docker image
-#          docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
-#
-#          # Tag it for the public ECR repository
-#          docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_PUBLIC_URI:$IMAGE_TAG
-#
-#          # Push to Public ECR
-#          docker push $ECR_PUBLIC_URI:$IMAGE_TAG
       - name: Build, Tag, and Push the Docker Image to Private ECR
         run: |
           # Navigate to the directory containing your Dockerfile
