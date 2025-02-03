@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.2 Safari/605.1.15" version="26.0.10">
   <diagram id="Ht1M8jgEwFfnCIfOTk4-" name="Page-1">
-    <mxGraphModel dx="2069" dy="726" grid="1" gridSize="11" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1862" dy="605" grid="1" gridSize="11" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -88,13 +88,13 @@
         <mxCell id="PZve3WB99vvV3nz0ZgWc-283" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;" edge="1" parent="1" source="XqnvShgukf1ZBkbc0cCG-12" target="cI-_qkn67fijJ2urr3SK-2">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="875" y="301" />
+              <mxPoint x="864" y="301" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="PZve3WB99vvV3nz0ZgWc-284" value="&lt;div&gt;&lt;span style=&quot;text-align: start; white-space: normal;&quot;&gt;&lt;font style=&quot;font-size: 9px;&quot;&gt;CloudWatch Alarm triggers when DLQ contains messages&lt;/font&gt;&lt;/span&gt;&lt;br&gt;&lt;/div&gt;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="PZve3WB99vvV3nz0ZgWc-283">
           <mxGeometry x="0.3086" relative="1" as="geometry">
-            <mxPoint x="17" y="40" as="offset" />
+            <mxPoint x="10" y="40" as="offset" />
           </mxGeometry>
         </mxCell>
         <mxCell id="XqnvShgukf1ZBkbc0cCG-12" value="&lt;b&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;Amazon SQS&lt;/font&gt;&lt;/b&gt;&lt;div&gt;&lt;font style=&quot;font-size: 10px;&quot;&gt;card-application-DLQ&lt;/font&gt;&lt;/div&gt;" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#E7157B;strokeColor=#ffffff;dashed=0;verticalLabelPosition=bottom;verticalAlign=top;align=center;html=1;fontSize=12;fontStyle=0;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.sqs;" parent="1" vertex="1">
@@ -278,7 +278,7 @@
         <mxCell id="PZve3WB99vvV3nz0ZgWc-242" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="XqnvShgukf1ZBkbc0cCG-12" target="XqnvShgukf1ZBkbc0cCG-9">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
-              <mxPoint x="875" y="583" />
+              <mxPoint x="864" y="583" />
               <mxPoint x="688" y="583" />
             </Array>
           </mxGeometry>
