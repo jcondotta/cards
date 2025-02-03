@@ -16,6 +16,7 @@ env:
   ECR_REPOSITORY: "cards/management-service"
   IMAGE_TAG: "latest"
 
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
