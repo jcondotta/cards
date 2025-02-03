@@ -47,7 +47,20 @@ jobs:
           aws ecr-public get-login-password --region ${{ env.AWS_REGION }} \
             | docker login --username AWS --password-stdin public.ecr.aws
 
-      - name: Build, Tag, and Push the Docker image
+#      - name: Build, Tag, and Push the Docker image
+#        run: |
+#          # Navigate to the directory containing your Dockerfile
+#          cd management-service
+#
+#          # Build the Docker image
+#          docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
+#
+#          # Tag it for the public ECR repository
+#          docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_PUBLIC_URI:$IMAGE_TAG
+#
+#          # Push to Public ECR
+#          docker push $ECR_PUBLIC_URI:$IMAGE_TAG
+      - name: Build, Tag, and Push the Docker Image to Private ECR
         run: |
           # Navigate to the directory containing your Dockerfile
           cd management-service
@@ -55,8 +68,9 @@ jobs:
           # Build the Docker image
           docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
           
-          # Tag it for the public ECR repository
-          docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_PUBLIC_URI:$IMAGE_TAG
+          # Tag it for the private ECR repository
+          docker tag $ECR_REPOSITORY:$IMAGE_TAG \
+            $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
           
-          # Push to Public ECR
-          docker push $ECR_PUBLIC_URI:$IMAGE_TAG
+          # Push to Private ECR
+          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
