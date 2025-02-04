@@ -42,4 +42,4 @@ jobs:
 
       - name: Upload Process Cards JAR to S3 bucket
         run: |
-          aws s3 cp process-service/target/process-service-0.1.jar s3://$S3_BUCKET_NAME/cards/process-service/
+          aws s3 cp process-service/target/process-service-0.1.jar s3://$S3_BUCKET_NAME/cards/prod/process-service/
