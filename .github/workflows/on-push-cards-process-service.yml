@@ -1,0 +1,45 @@
+name: On Push - CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "process-service/**"
+      - "core-service/**"
+      - ".github/workflows/on-push-cards-process-service.yml"
+
+env:
+  LOCALSTACK_VERSION: "3.7.0"
+  S3_BUCKET_NAME: "jcondotta-lambda-files"
+  AWS_REGION: "us-east-1"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK and Cache Maven Dependencies
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: 21
+          cache: maven
+
+      - name: Build JAR with Maven (Only Modified Modules)
+        run: |
+          mvn clean package -pl process-service -am --batch-mode
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Upload Process Cards JAR to S3
+        run: |
+          aws s3 cp process-cards/target/process-cards-0.1.jar s3://$S3_BUCKET_NAME/process-cards/
