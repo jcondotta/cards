@@ -67,8 +67,9 @@ public class AddCardService {
         dynamoDbTable.putItem(card);
 
         logger.info("Card saved to DB",
-                StructuredArguments.keyValue("bankAccountId", request.bankAccountId()),
-                StructuredArguments.keyValue("cardholderName", request.cardholderName())
+                StructuredArguments.keyValue("bankAccountId", card.getBankAccountId()),
+                StructuredArguments.keyValue("cardId", card.getCardId()),
+                StructuredArguments.keyValue("cardholderName", card.getCardholderName())
         );
 
         logger.debug("Saved Card: {}", card);
