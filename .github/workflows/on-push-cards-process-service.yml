@@ -33,6 +33,12 @@ jobs:
         run: |
           mvn clean package -pl process-service -am --batch-mode
 
+      - name: Debug Build Output
+        run: |
+          ls -R process-service/target/
+          ls -R process-cards/target/
+
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
