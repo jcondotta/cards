@@ -1,14 +1,19 @@
-resource "aws_lb_listener" "http" {
+resource "aws_lb_listener" "load_balancer_listener_http" {
   load_balancer_arn = aws_lb.this.arn
   port              = 80
   protocol          = "HTTP"
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.cards_load_balancer_target_group.arn
+    type = "fixed-response"
+
+    fixed_response {
+      content_type = "text/html"
+      message_body = "<h1>404 Not Found</h1><p>Cards - Custom error page</p>"
+      status_code  = "404"
+    }
   }
 
   tags = {
-    Name = "cards-http-listener"
+    Name = "load-balancer-listener-http"
   }
 }
