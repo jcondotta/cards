@@ -6,7 +6,7 @@ variable "card_application_queue_name" {
 variable "card_application_queue_visibility_timeout_seconds" {
   description = "The amount of time (in seconds) that a message is hidden from other consumers after it is retrieved by a consumer."
   type        = number
-  default     = 30 # Default visibility timeout is 30 seconds
+  default     = 90
 }
 
 variable "card_application_queue_message_retention_seconds" {
