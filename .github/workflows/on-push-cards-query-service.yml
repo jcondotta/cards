@@ -1,4 +1,4 @@
-name: On Push - Management Service Pipeline
+name: On Push - Query Service Pipeline
 
 on:
   push:
