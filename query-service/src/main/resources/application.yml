@@ -4,10 +4,12 @@ micronaut:
     name: cards-query-service
   server:
     port: 8073
+  graphql:
+    path: /query/graphql
+
 
 aws:
   region: ${AWS_DEFAULT_REGION}
-
   dynamodb:
     tables:
       cards:
@@ -15,11 +17,11 @@ aws:
         global-secondary-indexes:
           cards-by-bank-account-id:
             name: ${AWS_DYNAMODB_CARDS_BY_BANK_ACCOUNT_ID_GSI_NAME}
-
-graphql:
-  enabled: true
-  graphiql:
-    enabled: true
+#
+#graphql:
+#  enabled: true
+#  graphiql:
+#    enabled: true
 
 jackson:
   serialization-inclusion: ALWAYS
