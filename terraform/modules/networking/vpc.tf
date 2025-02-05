@@ -5,6 +5,6 @@ resource "aws_vpc" "this" {
   instance_tenancy     = "default"
 
   tags = {
-    Name = "cards-vpc"
+    Name = "cards-vpc-${var.environment}"
   }
 }

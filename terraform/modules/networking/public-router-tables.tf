@@ -9,7 +9,7 @@ resource "aws_route_table" "public_route_tables" {
   }
 
   tags = {
-    Name = "cards-public-route-table-${each.key}"
+    Name = "cards-public-rt-${each.key}"
   }
 }
 
