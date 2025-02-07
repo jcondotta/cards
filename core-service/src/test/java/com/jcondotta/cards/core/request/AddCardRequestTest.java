@@ -1,7 +1,6 @@
 package com.jcondotta.cards.core.request;
 
 import com.jcondotta.cards.core.argument_provider.BlankAndNonPrintableCharactersArgumentProvider;
-import com.jcondotta.cards.core.argument_provider.security.ThreatInputArgumentProvider;
 import com.jcondotta.cards.core.factory.ValidatorTestFactory;
 import com.jcondotta.cards.core.helper.TestBankAccount;
 import com.jcondotta.cards.core.helper.TestCardholder;
@@ -54,21 +53,6 @@ class AddCardRequestTest {
                 .first()
                 .satisfies(violation -> {
                     assertThat(violation.getMessage()).isEqualTo("card.cardholderName.notBlank");
-                    assertThat(violation.getPropertyPath()).hasToString("cardholderName");
-                });
-    }
-
-    @ParameterizedTest
-    @ArgumentsSource(ThreatInputArgumentProvider.class)
-    void shouldDetectConstraintViolation_whenCardholderNameIsMalicious(String invalidCardholderName) {
-        var addCardholderRequest = new AddCardRequest(BANK_ACCOUNT_ID_BRAZIL, invalidCardholderName);
-
-        var constraintViolations = VALIDATOR.validate(addCardholderRequest);
-        assertThat(constraintViolations)
-                .hasSize(1)
-                .first()
-                .satisfies(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("card.cardholderName.invalid");
                     assertThat(violation.getPropertyPath()).hasToString("cardholderName");
                 });
     }

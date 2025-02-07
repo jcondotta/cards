@@ -1,7 +1,6 @@
 package com.jcondotta.cards.core.request;
 
 import com.jcondotta.cards.core.domain.CardStatus;
-import com.jcondotta.cards.core.validation.annotation.SecureInput;
 import io.micronaut.serde.annotation.Serdeable;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
@@ -26,7 +25,6 @@ public record AddCardRequest(
                 requiredMode = RequiredMode.REQUIRED)
         @NotBlank(message = "card.cardholderName.notBlank")
         @Size(max = 31, message = "card.cardholderName.tooLong")
-        @SecureInput(message = "card.cardholderName.invalid")
         String cardholderName
 ) {
     public static final CardStatus DEFAULT_CARD_STATUS = CardStatus.LOCKED;

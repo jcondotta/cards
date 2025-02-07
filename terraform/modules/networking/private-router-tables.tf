@@ -8,7 +8,7 @@ resource "aws_route_table" "private_route_tables" {
   }
 }
 
-resource "aws_route_table_association" "private_subnet_associations" {
+resource "aws_route_table_association" "route_table_private_subnet_associations" {
   for_each = aws_subnet.private_subnets
 
   subnet_id      = each.value.id

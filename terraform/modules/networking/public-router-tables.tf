@@ -13,7 +13,7 @@ resource "aws_route_table" "public_route_tables" {
   }
 }
 
-resource "aws_route_table_association" "public_subnet_associations" {
+resource "aws_route_table_association" "route_table_public_subnet_associations" {
   for_each = aws_subnet.public_subnets
 
   subnet_id      = each.value.id

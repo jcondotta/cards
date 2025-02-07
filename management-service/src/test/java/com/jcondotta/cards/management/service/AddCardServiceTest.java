@@ -1,6 +1,6 @@
 package com.jcondotta.cards.management.service;
 
-import com.jcondotta.cards.core.argument_provider.InvalidStringArgumentProvider;
+import com.jcondotta.cards.core.argument_provider.BlankAndNonPrintableCharactersArgumentProvider;
 import com.jcondotta.cards.core.factory.ValidatorTestFactory;
 import com.jcondotta.cards.core.helper.TestBankAccount;
 import com.jcondotta.cards.core.helper.TestCardholder;
@@ -68,8 +68,8 @@ class AddCardServiceTest {
     }
 
     @ParameterizedTest
-    @ArgumentsSource(InvalidStringArgumentProvider.class)
-    public void shouldThrowConstraintViolationException_whenCardholderNameIsInvalid(String invalidCardholderName){
+    @ArgumentsSource(BlankAndNonPrintableCharactersArgumentProvider.class)
+    public void shouldThrowConstraintViolationException_whenCardholderNameIsBlank(String invalidCardholderName){
         var addCardRequest = new AddCardRequest(BANK_ACCOUNT_ID_BRAZIL, invalidCardholderName);
 
         var exception = assertThrows(ConstraintViolationException.class, () -> addCardService.addCard(addCardRequest));

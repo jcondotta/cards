@@ -2,7 +2,6 @@ package com.jcondotta.cards.process.web.events;
 
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.jcondotta.cards.core.argument_provider.BlankAndNonPrintableCharactersArgumentProvider;
-import com.jcondotta.cards.core.argument_provider.security.ThreatInputArgumentProvider;
 import com.jcondotta.cards.core.container.LocalStackTestContainer;
 import com.jcondotta.cards.core.domain.Card;
 import com.jcondotta.cards.core.helper.CardTablePurgeService;
@@ -27,7 +26,6 @@ import software.amazon.awssdk.services.sqs.SqsClient;
 import java.io.IOException;
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -115,7 +113,7 @@ class CardApplicationEventHandlerIT implements LocalStackTestContainer {
                 () -> assertThat(card.getDailyPaymentLimit()).isEqualTo(AddCardRequest.DEFAULT_DAILY_PAYMENT_LIMIT),
                 () -> assertThat(card.getCreatedAt()).isEqualTo(LocalDateTime.now(clock)),
                 () -> assertThat(card.getExpirationDate()).isEqualTo(LocalDateTime.now(clock)
-                        .plus(AddCardRequest.DEFAULT_YEAR_PERIOD_EXPIRATION_DATE, ChronoUnit.YEARS))
+                        .plusYears(AddCardRequest.DEFAULT_YEAR_PERIOD_EXPIRATION_DATE))
         ));
     }
 
@@ -150,23 +148,6 @@ class CardApplicationEventHandlerIT implements LocalStackTestContainer {
                 .first()
                 .satisfies(violation -> {
                     assertThat(violation.getMessage()).isEqualTo("card.cardholderName.notBlank");
-                    assertThat(violation.getPropertyPath()).hasToString("cardholderName");
-                });
-
-        assertNoCardsSaved();
-    }
-
-    @ParameterizedTest
-    @ArgumentsSource(ThreatInputArgumentProvider.class)
-    void shouldThrowConstraintViolationException_whenCardholderNameIsMalicious(String invalidCardholderName) {
-        var addCardRequest = new AddCardRequest(BANK_ACCOUNT_ID_BRAZIL, invalidCardholderName);
-        var sqsEvent = createSQSEvent(addCardRequest);
-
-        var exception = assertThrows(ConstraintViolationException.class, () -> cardApplicationEventHandler.execute(sqsEvent));
-
-        assertThat(exception.getConstraintViolations())
-                .anySatisfy(violation -> {
-                    assertThat(violation.getMessage()).isEqualTo("card.cardholderName.invalid");
                     assertThat(violation.getPropertyPath()).hasToString("cardholderName");
                 });
 

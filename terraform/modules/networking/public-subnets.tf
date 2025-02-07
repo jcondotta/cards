@@ -1,7 +1,7 @@
 resource "aws_subnet" "public_subnets" {
   for_each = {
-    "us-east-1a" = "10.0.0.0/28",
-    "us-east-1b" = "10.0.0.16/28"
+    "us-east-1a" = "10.0.0.0/27",
+    "us-east-1b" = "10.0.0.32/27"
   }
 
   vpc_id                   = aws_vpc.this.id
