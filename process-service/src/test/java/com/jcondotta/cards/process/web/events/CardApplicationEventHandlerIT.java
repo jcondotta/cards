@@ -103,18 +103,20 @@ class CardApplicationEventHandlerIT implements LocalStackTestContainer {
 
         assertThat(cards).hasSize(1);
 
-        cards.iterator().forEachRemaining(card -> assertAll(
-                () -> assertThat(card.getCardId()).isNotNull(),
-                () -> assertThat(card.getBankAccountId()).isEqualTo(addCardRequest.bankAccountId()),
-                () -> assertThat(card.getCardholderName()).isEqualTo(addCardRequest.cardholderName()),
-                () -> assertThat(card.getCardNumber()).isNotNull(),
-                () -> assertThat(card.getCardStatus()).isEqualTo(AddCardRequest.DEFAULT_CARD_STATUS),
-                () -> assertThat(card.getDailyWithdrawalLimit()).isEqualTo(AddCardRequest.DEFAULT_DAILY_WITHDRAWAL_LIMIT),
-                () -> assertThat(card.getDailyPaymentLimit()).isEqualTo(AddCardRequest.DEFAULT_DAILY_PAYMENT_LIMIT),
-                () -> assertThat(card.getCreatedAt()).isEqualTo(LocalDateTime.now(clock)),
-                () -> assertThat(card.getExpirationDate()).isEqualTo(LocalDateTime.now(clock)
-                        .plusYears(AddCardRequest.DEFAULT_YEAR_PERIOD_EXPIRATION_DATE))
-        ));
+        assertThat(cards)
+                .first()
+                .satisfies(card -> assertAll(
+                        () -> assertThat(card.getCardId()).isNotNull(),
+                        () -> assertThat(card.getBankAccountId()).isEqualTo(addCardRequest.bankAccountId()),
+                        () -> assertThat(card.getCardholderName()).isEqualTo(addCardRequest.cardholderName()),
+                        () -> assertThat(card.getCardNumber()).isNotNull(),
+                        () -> assertThat(card.getCardStatus()).isEqualTo(AddCardRequest.DEFAULT_CARD_STATUS),
+                        () -> assertThat(card.getDailyWithdrawalLimit()).isEqualTo(AddCardRequest.DEFAULT_DAILY_WITHDRAWAL_LIMIT),
+                        () -> assertThat(card.getDailyPaymentLimit()).isEqualTo(AddCardRequest.DEFAULT_DAILY_PAYMENT_LIMIT),
+                        () -> assertThat(card.getCreatedAt()).isEqualTo(LocalDateTime.now(clock)),
+                        () -> assertThat(card.getExpirationDate()).isEqualTo(LocalDateTime.now(clock)
+                                .plusYears(AddCardRequest.DEFAULT_YEAR_PERIOD_EXPIRATION_DATE))
+                ));
     }
 
     @Test

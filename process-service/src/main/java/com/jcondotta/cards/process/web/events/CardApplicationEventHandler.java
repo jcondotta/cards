@@ -35,7 +35,6 @@ public class CardApplicationEventHandler extends MicronautRequestHandler<SQSEven
     public Void execute(SQSEvent sqsEvent) {
         for (SQSEvent.SQSMessage message : sqsEvent.getRecords()) {
             try {
-                // Debug-level log for the raw message (optional)
                 if (logger.isDebugEnabled()) {
                     logger.debug("Processing SQS message",
                             StructuredArguments.keyValue("messageId", message.getMessageId()),
@@ -46,7 +45,7 @@ public class CardApplicationEventHandler extends MicronautRequestHandler<SQSEven
                 AddCardRequest addCardRequest = jsonMapper.readValue(message.getBody(), AddCardRequest.class);
 
                 logger.info("Received a card application event",
-                        StructuredArguments.keyValue("bankAccountId", addCardRequest.bankAccountId()),
+                        StructuredArguments.keyValue("cardId", addCardRequest.bankAccountId()),
                         StructuredArguments.keyValue("cardholderName", addCardRequest.cardholderName())
                 );
 

@@ -6,6 +6,10 @@ import com.jcondotta.cards.core.factory.ValidatorTestFactory;
 import com.jcondotta.cards.core.helper.TestBankAccount;
 import com.jcondotta.cards.core.helper.TestCardholder;
 import com.jcondotta.cards.core.request.AddCardRequest;
+import com.jcondotta.cards.core.service.cache.BankAccountIdCacheKey;
+import com.jcondotta.cards.core.service.cache.CacheEvictionService;
+import com.jcondotta.cards.core.service.dto.CardDTO;
+import com.jcondotta.cards.core.service.dto.CardsDTO;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -40,31 +44,35 @@ class AddCardServiceTest {
     @Mock
     private DynamoDbTable<Card> dynamoDbTable;
 
+    @Mock
+    private CacheEvictionService<CardsDTO> cacheEvictionService;
+
     @BeforeEach
     void beforeEach(){
-        addCardService = new AddCardService(dynamoDbTable, TEST_CLOCK_FIXED_INSTANT, VALIDATOR);
+        addCardService = new AddCardService(dynamoDbTable, cacheEvictionService, TEST_CLOCK_FIXED_INSTANT, VALIDATOR);
     }
 
     @Test
     void shouldSaveCard_whenRequestIsValid(){
         var addCardRequest = new AddCardRequest(BANK_ACCOUNT_ID_BRAZIL, CARDHOLDER_NAME_JEFFERSON);
 
-        Card card = addCardService.addCard(addCardRequest);
+        CardDTO cardDTO = addCardService.addCard(addCardRequest);
 
         assertAll(
-                () -> assertThat(card.getCardId()).isNotNull(),
-                () -> assertThat(card.getBankAccountId()).isEqualTo(addCardRequest.bankAccountId()),
-                () -> assertThat(card.getCardholderName()).isEqualTo(addCardRequest.cardholderName()),
-                () -> assertThat(card.getCardNumber()).isNotNull(),
-                () -> assertThat(card.getCardStatus()).isEqualTo(AddCardRequest.DEFAULT_CARD_STATUS),
-                () -> assertThat(card.getDailyWithdrawalLimit()).isEqualTo(AddCardRequest.DEFAULT_DAILY_WITHDRAWAL_LIMIT),
-                () -> assertThat(card.getDailyPaymentLimit()).isEqualTo(AddCardRequest.DEFAULT_DAILY_PAYMENT_LIMIT),
-                () -> assertThat(card.getCreatedAt()).isEqualTo(LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT)),
-                () -> assertThat(card.getExpirationDate()).isEqualTo(LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT)
+                () -> assertThat(cardDTO.cardId()).isNotNull(),
+                () -> assertThat(cardDTO.bankAccountId()).isEqualTo(addCardRequest.bankAccountId()),
+                () -> assertThat(cardDTO.cardholderName()).isEqualTo(addCardRequest.cardholderName()),
+                () -> assertThat(cardDTO.cardNumber()).isNotNull(),
+                () -> assertThat(cardDTO.cardStatus()).isEqualTo(AddCardRequest.DEFAULT_CARD_STATUS),
+                () -> assertThat(cardDTO.dailyWithdrawalLimit()).isEqualTo(AddCardRequest.DEFAULT_DAILY_WITHDRAWAL_LIMIT),
+                () -> assertThat(cardDTO.dailyPaymentLimit()).isEqualTo(AddCardRequest.DEFAULT_DAILY_PAYMENT_LIMIT),
+                () -> assertThat(cardDTO.createdAt()).isEqualTo(LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT)),
+                () -> assertThat(cardDTO.expirationDate()).isEqualTo(LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT)
                         .plusYears(AddCardRequest.DEFAULT_YEAR_PERIOD_EXPIRATION_DATE))
         );
 
         verify(dynamoDbTable).putItem(any(Card.class));
+        verify(cacheEvictionService).evictCacheEntry(eq(new BankAccountIdCacheKey(addCardRequest.bankAccountId())));
         verifyNoMoreInteractions(dynamoDbTable);
     }
 
@@ -76,6 +84,7 @@ class AddCardServiceTest {
         assertThat(exception.getConstraintViolations()).hasSize(1);
 
         verifyNoInteractions(dynamoDbTable);
+        verifyNoInteractions(cacheEvictionService);
     }
 
     @Test
@@ -87,5 +96,6 @@ class AddCardServiceTest {
         assertThat(exception.getConstraintViolations()).hasSize(1);
 
         verifyNoInteractions(dynamoDbTable);
+        verifyNoInteractions(cacheEvictionService);
     }
 }

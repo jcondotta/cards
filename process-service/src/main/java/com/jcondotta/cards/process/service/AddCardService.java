@@ -2,6 +2,10 @@ package com.jcondotta.cards.process.service;
 
 import com.jcondotta.cards.core.domain.Card;
 import com.jcondotta.cards.core.request.AddCardRequest;
+import com.jcondotta.cards.core.service.cache.BankAccountIdCacheKey;
+import com.jcondotta.cards.core.service.cache.CacheEvictionService;
+import com.jcondotta.cards.core.service.dto.CardDTO;
+import com.jcondotta.cards.core.service.dto.CardsDTO;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.validation.ConstraintViolationException;
@@ -22,19 +26,22 @@ public class AddCardService {
     private static final Logger logger = LoggerFactory.getLogger(AddCardService.class);
 
     private final DynamoDbTable<Card> dynamoDbTable;
+    private final CacheEvictionService<CardsDTO> cacheEvictionService;
     private final Clock currentInstant;
     private final Validator validator;
 
     @Inject
     public AddCardService(DynamoDbTable<Card> dynamoDbTable,
+                          CacheEvictionService<CardsDTO> cacheEvictionService,
                           Clock currentInstant,
                           Validator validator) {
         this.dynamoDbTable = dynamoDbTable;
+        this.cacheEvictionService = cacheEvictionService;
         this.currentInstant = currentInstant;
         this.validator = validator;
     }
 
-    public Card addCard(AddCardRequest request) {
+    public CardDTO addCard(AddCardRequest request) {
         logger.info("Attempting to add a new card",
                 StructuredArguments.keyValue("bankAccountId", request.bankAccountId()),
                 StructuredArguments.keyValue("cardholderName", request.cardholderName())
@@ -65,15 +72,14 @@ public class AddCardService {
                 .plusYears(AddCardRequest.DEFAULT_YEAR_PERIOD_EXPIRATION_DATE));
 
         dynamoDbTable.putItem(card);
+        cacheEvictionService.evictCacheEntry(new BankAccountIdCacheKey(request.bankAccountId()));
 
         logger.info("Card saved to DB",
-                StructuredArguments.keyValue("bankAccountId", card.getBankAccountId()),
                 StructuredArguments.keyValue("cardId", card.getCardId()),
+                StructuredArguments.keyValue("bankAccountId", card.getBankAccountId()),
                 StructuredArguments.keyValue("cardholderName", card.getCardholderName())
         );
 
-        logger.debug("Saved Card: {}", card);
-
-        return card;
+        return new CardDTO(card);
     }
 }
