@@ -3,7 +3,9 @@ resource "aws_vpc_endpoint" "dynamodb_gateway_vpc_endpoint" {
   service_name      = "com.amazonaws.${var.aws_region}.dynamodb"
   vpc_endpoint_type = "Gateway"
 
-  route_table_ids = [for route_table in aws_route_table.private_route_tables : route_table.id]
+  route_table_ids = [
+    aws_route_table.private_route_table.id
+  ]
 
   tags = {
     Name = "dynamodb-gateway-vpc-endpoint-${var.environment}"
@@ -63,7 +65,9 @@ resource "aws_vpc_endpoint" "s3_gateway_vpc_endpoint" {
   service_name      = "com.amazonaws.${var.aws_region}.s3"
   vpc_endpoint_type = "Gateway"
 
-  route_table_ids = [for route_table in aws_route_table.private_route_tables : route_table.id]
+  route_table_ids = [
+    aws_route_table.private_route_table.id
+  ]
 
   tags = {
     Name = "s3-gateway-vpc-endpoint-${var.environment}"
