@@ -33,8 +33,7 @@ public class CardsCacheService<V> {
     public Optional<V> getCacheEntryValue(CacheKey cacheKey) {
         Optional<V> cacheEntryValue = readSyncCacheService.getCacheEntryValue(cacheKey);
 
-        cacheEntryValue.ifPresentOrElse(
-                cardDTO -> LOGGER.info("Cache hit",
+        cacheEntryValue.ifPresentOrElse(cardDTO -> LOGGER.info("Cache hit",
                         StructuredArguments.keyValue("cacheKey", cacheKey.getKey())
                 ),
                 () -> LOGGER.info("Cache miss",

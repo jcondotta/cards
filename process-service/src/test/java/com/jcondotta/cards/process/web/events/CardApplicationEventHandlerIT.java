@@ -4,10 +4,16 @@ import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.jcondotta.cards.core.argument_provider.BlankAndNonPrintableCharactersArgumentProvider;
 import com.jcondotta.cards.core.container.LocalStackTestContainer;
 import com.jcondotta.cards.core.domain.Card;
+import com.jcondotta.cards.core.factory.CardTestFactory;
 import com.jcondotta.cards.core.helper.CardTablePurgeService;
 import com.jcondotta.cards.core.helper.TestBankAccount;
+import com.jcondotta.cards.core.helper.TestCard;
 import com.jcondotta.cards.core.helper.TestCardholder;
 import com.jcondotta.cards.core.request.AddCardRequest;
+import com.jcondotta.cards.core.service.cache.BankAccountIdCacheKey;
+import com.jcondotta.cards.core.service.cache.CardsCacheService;
+import com.jcondotta.cards.core.service.dto.CardDTO;
+import com.jcondotta.cards.core.service.dto.CardsDTO;
 import io.micronaut.context.ApplicationContext;
 import io.micronaut.context.annotation.Value;
 import io.micronaut.json.JsonMapper;
@@ -39,6 +45,7 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 @MicronautTest(transactional = false)
 class CardApplicationEventHandlerIT implements LocalStackTestContainer {
 
+    private static final UUID CARD_ID_JEFFERSON = TestCard.JEFFERSON.getCardId();
     private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
     private static final String CARDHOLDER_NAME_JEFFERSON = TestCardholder.JEFFERSON.getCardholderName();
 
@@ -56,6 +63,9 @@ class CardApplicationEventHandlerIT implements LocalStackTestContainer {
 
     @Inject
     DynamoDbTable<Card> dynamoDbTable;
+
+    @Inject
+    CardsCacheService<CardsDTO> cardsCacheService;
 
     @Inject
     CardTablePurgeService cardTablePurgeService;
@@ -117,6 +127,28 @@ class CardApplicationEventHandlerIT implements LocalStackTestContainer {
                         () -> assertThat(card.getExpirationDate()).isEqualTo(LocalDateTime.now(clock)
                                 .plusYears(AddCardRequest.DEFAULT_YEAR_PERIOD_EXPIRATION_DATE))
                 ));
+    }
+
+    @Test
+    void shouldEvictCacheKey_whenValidSQSEventIsReceived() {
+        var addCardRequest = new AddCardRequest(BANK_ACCOUNT_ID_BRAZIL, CARDHOLDER_NAME_JEFFERSON);
+        SQSEvent sqsEvent = createSQSEvent(addCardRequest);
+
+        var bankAccountIdCacheKey = new BankAccountIdCacheKey(addCardRequest.bankAccountId());
+        var card = CardTestFactory.buildCard(CARD_ID_JEFFERSON, BANK_ACCOUNT_ID_BRAZIL, CARDHOLDER_NAME_JEFFERSON);
+
+        var cardDTO = new CardDTO(card);
+        cardsCacheService.setCacheEntry(bankAccountIdCacheKey, new CardsDTO(cardDTO));
+
+        assertThat(cardsCacheService.getCacheEntryValue(bankAccountIdCacheKey))
+                .isPresent()
+                .get()
+                .satisfies(cardsDTO -> assertThat(cardsDTO.cards()).hasSize(1));
+
+        cardApplicationEventHandler.execute(sqsEvent);
+
+        var cacheEntryValue = cardsCacheService.getCacheEntryValue(bankAccountIdCacheKey);
+        assertThat(cacheEntryValue).isEmpty();
     }
 
     @Test

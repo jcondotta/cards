@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode;
@@ -27,6 +28,14 @@ public record CardsDTO(
                 requiredMode = RequiredMode.NOT_REQUIRED)
         LastEvaluatedKey lastEvaluatedKey
 ) {
+
+    public CardsDTO(Collection<CardDTO> cards) {
+        this(cards, cards.size(), null);
+    }
+
+    public CardsDTO(CardDTO cardDTO) {
+        this(List.of(cardDTO), 1, null);
+    }
 
     @Override
     public Collection<CardDTO> cards() {

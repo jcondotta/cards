@@ -4,7 +4,9 @@ import com.jcondotta.cards.core.service.cache.RedisCardsDTOCodec;
 import com.jcondotta.cards.core.service.dto.CardsDTO;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.RedisURI;
+import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.async.RedisAsyncCommands;
+import io.lettuce.core.api.sync.RedisCommands;
 import io.micronaut.context.annotation.Factory;
 import io.micronaut.context.annotation.Replaces;
 import io.micronaut.context.annotation.Value;
@@ -45,10 +47,29 @@ public class RedisFactory {
     }
 
     @Singleton
-    @Replaces(RedisAsyncCommands.class)
-    public RedisAsyncCommands<String, CardsDTO> redisCardsDTOConnection(RedisClient redisClient, RedisCardsDTOCodec codec) {
-        return redisClient.connect(codec).async();
+    @Replaces(StatefulRedisConnection.class)
+    public StatefulRedisConnection<String, CardsDTO> redisCardsDTOConnection(RedisClient redisClient, RedisCardsDTOCodec codec) {
+        var redis = redisClient.connect();
+        RedisCommands<String, String> sync = redis.sync();
+        sync.set("Jefferson", "Condotta");
+        System.out.println(sync.get("Jefferson"));
+        return redisClient.connect(codec);
     }
+
+    @Singleton
+    public RedisCommands<String, CardsDTO> redisCommands(StatefulRedisConnection<String, CardsDTO> statefulRedisConnection) {
+        System.out.println("RedisCommand");
+        return statefulRedisConnection.sync();
+    }
+
+    @Singleton
+    @Replaces(RedisAsyncCommands.class)
+    public RedisAsyncCommands<String, CardsDTO> redisAsyncCommands(StatefulRedisConnection<String, CardsDTO> statefulRedisConnection) {
+        System.out.println("RedisAsyncCommand");
+        return statefulRedisConnection.async();
+    }
+
+
 //
 //    @Singleton
 //    @Replaces(RedisClient.class)

@@ -15,7 +15,7 @@ public class WriteAsyncCacheService<V> {
     private final Long timeToLiveInSeconds;
 
     @Inject
-    public WriteAsyncCacheService(RedisAsyncCommands<String, V> redisAsyncCommands, @Value("${redis.cache.ttl-in-seconds}") Long timeToLiveInSeconds) {
+    public WriteAsyncCacheService(RedisAsyncCommands<String, V> redisAsyncCommands, @Value("${redis.cache.cards.ttl-in-seconds}") Long timeToLiveInSeconds) {
         this.redisAsyncCommands = redisAsyncCommands;
         this.timeToLiveInSeconds = timeToLiveInSeconds;
     }
@@ -24,7 +24,6 @@ public class WriteAsyncCacheService<V> {
         Objects.requireNonNull(cacheKey, "Cache key cannot be null");
         Objects.requireNonNull(cacheValue, "Cache value cannot be null");
 
-        var cacheKeyString = cacheKey.getKey();
-        redisAsyncCommands.setex(cacheKeyString, timeToLiveInSeconds, cacheValue);
+        redisAsyncCommands.setex(cacheKey.getKey(), timeToLiveInSeconds, cacheValue);
     }
 }
