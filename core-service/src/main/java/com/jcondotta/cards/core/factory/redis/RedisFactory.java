@@ -57,6 +57,7 @@ public class RedisFactory {
     }
 
     @Singleton
+    @Replaces(RedisCommands.class)
     public RedisCommands<String, CardsDTO> redisCommands(StatefulRedisConnection<String, CardsDTO> statefulRedisConnection) {
         System.out.println("RedisCommand");
         return statefulRedisConnection.sync();
