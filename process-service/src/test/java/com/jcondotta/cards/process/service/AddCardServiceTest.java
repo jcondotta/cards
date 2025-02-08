@@ -56,20 +56,20 @@ class AddCardServiceTest {
     void shouldSaveCard_whenRequestIsValid(){
         var addCardRequest = new AddCardRequest(BANK_ACCOUNT_ID_BRAZIL, CARDHOLDER_NAME_JEFFERSON);
 
-        CardDTO cardDTO = addCardService.addCard(addCardRequest);
-
-        assertAll(
-                () -> assertThat(cardDTO.cardId()).isNotNull(),
-                () -> assertThat(cardDTO.bankAccountId()).isEqualTo(addCardRequest.bankAccountId()),
-                () -> assertThat(cardDTO.cardholderName()).isEqualTo(addCardRequest.cardholderName()),
-                () -> assertThat(cardDTO.cardNumber()).isNotNull(),
-                () -> assertThat(cardDTO.cardStatus()).isEqualTo(AddCardRequest.DEFAULT_CARD_STATUS),
-                () -> assertThat(cardDTO.dailyWithdrawalLimit()).isEqualTo(AddCardRequest.DEFAULT_DAILY_WITHDRAWAL_LIMIT),
-                () -> assertThat(cardDTO.dailyPaymentLimit()).isEqualTo(AddCardRequest.DEFAULT_DAILY_PAYMENT_LIMIT),
-                () -> assertThat(cardDTO.createdAt()).isEqualTo(LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT)),
-                () -> assertThat(cardDTO.expirationDate()).isEqualTo(LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT)
-                        .plusYears(AddCardRequest.DEFAULT_YEAR_PERIOD_EXPIRATION_DATE))
-        );
+        assertThat(addCardService.addCard(addCardRequest))
+                .isNotNull()
+                .satisfies(cardDTO -> assertAll(
+                        () -> assertThat(cardDTO.cardId()).isNotNull(),
+                        () -> assertThat(cardDTO.bankAccountId()).isEqualTo(addCardRequest.bankAccountId()),
+                        () -> assertThat(cardDTO.cardholderName()).isEqualTo(addCardRequest.cardholderName()),
+                        () -> assertThat(cardDTO.cardNumber()).isNotNull(),
+                        () -> assertThat(cardDTO.cardStatus()).isEqualTo(AddCardRequest.DEFAULT_CARD_STATUS),
+                        () -> assertThat(cardDTO.dailyWithdrawalLimit()).isEqualTo(AddCardRequest.DEFAULT_DAILY_WITHDRAWAL_LIMIT),
+                        () -> assertThat(cardDTO.dailyPaymentLimit()).isEqualTo(AddCardRequest.DEFAULT_DAILY_PAYMENT_LIMIT),
+                        () -> assertThat(cardDTO.createdAt()).isEqualTo(LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT)),
+                        () -> assertThat(cardDTO.expirationDate()).isEqualTo(LocalDateTime.now(TEST_CLOCK_FIXED_INSTANT)
+                                .plusYears(AddCardRequest.DEFAULT_YEAR_PERIOD_EXPIRATION_DATE))
+                ));
 
         verify(dynamoDbTable).putItem(any(Card.class));
         verify(cacheEvictionService).evictCacheEntry(eq(new BankAccountIdCacheKey(addCardRequest.bankAccountId())));

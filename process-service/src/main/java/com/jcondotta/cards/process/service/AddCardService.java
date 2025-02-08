@@ -72,13 +72,14 @@ public class AddCardService {
                 .plusYears(AddCardRequest.DEFAULT_YEAR_PERIOD_EXPIRATION_DATE));
 
         dynamoDbTable.putItem(card);
-        cacheEvictionService.evictCacheEntry(new BankAccountIdCacheKey(request.bankAccountId()));
 
         logger.info("Card saved to DB",
                 StructuredArguments.keyValue("cardId", card.getCardId()),
                 StructuredArguments.keyValue("bankAccountId", card.getBankAccountId()),
                 StructuredArguments.keyValue("cardholderName", card.getCardholderName())
         );
+
+        cacheEvictionService.evictCacheEntry(new BankAccountIdCacheKey(request.bankAccountId()));
 
         return new CardDTO(card);
     }
