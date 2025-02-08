@@ -26,7 +26,7 @@ redis:
   uri:
     host: ${REDIS_HOST}
     port: ${REDIS_PORT}
-  ssl: true
+  ssl: false
   cache:
     cards:
       ttl-in-seconds: ${REDIS_TTL_IN_SECONDS:3600}
