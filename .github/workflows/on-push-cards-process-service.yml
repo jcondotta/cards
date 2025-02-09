@@ -33,6 +33,9 @@ jobs:
         run: |
           mvn clean package -pl process-service -am --batch-mode
 
+      - name: Debug AWS Credentials
+        run: aws sts get-caller-identity --profile jcondotta.admin
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
