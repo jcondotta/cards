@@ -13,9 +13,6 @@ permissions:
   id-token: write  # Required for OIDC authentication
   contents: read   # Required for checking out the repo
 
-env:
-  S3_BUCKET_NAME: "cards-process-service-lambda-files-prod"
-
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -35,9 +32,6 @@ jobs:
         run: |
           mvn clean package -pl process-service -am --batch-mode
 
-      - name: Debug AWS Credentials
-        run: aws sts get-caller-identity --profile jcondotta.admin
-
       - name: Configure AWS credentials using OIDC
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -46,4 +40,4 @@ jobs:
 
       - name: Upload Process Cards JAR to S3 bucket
         run: |
-          aws s3 cp process-service/target/process-service-0.1.jar s3://$S3_BUCKET_NAME/cards/prod/process-service/
+          aws s3 cp process-service/target/process-service-0.1.jar s3://cards-process-service-lambda-files-prod/
