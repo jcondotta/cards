@@ -1,8 +1,8 @@
 resource "aws_dynamodb_table" "cards" {
   name           = var.cards_table_name
-  billing_mode   = var.cards_billing_mode
-  read_capacity  = var.cards_read_capacity
-  write_capacity = var.cards_write_capacity
+  billing_mode   = "PROVISIONED"
+  read_capacity  = 2
+  write_capacity = 2
 
   hash_key = "cardId"
 
@@ -20,9 +20,7 @@ resource "aws_dynamodb_table" "cards" {
     name            = var.cards_by_bank_account_id_gsi_name
     hash_key        = "bankAccountId"
     projection_type = "ALL"
-    read_capacity   = var.cards_by_bank_account_id_gsi_read_capacity
-    write_capacity  = var.cards_by_bank_account_id_gsi_write_capacity
+    read_capacity   = 2
+    write_capacity  = 2
   }
-
-  tags = var.tags
 }
