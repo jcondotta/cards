@@ -15,6 +15,7 @@ aws:
       card-application-dead-letter-queue:
         name: 'card-application-dlq-test'
 
+
 redis:
   enabled: true
   ssl: false
