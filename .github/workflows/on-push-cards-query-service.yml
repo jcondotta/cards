@@ -1,64 +1,65 @@
-#name: On Push - Query Service Pipeline
-#
-#on:
-#  push:
-#    branches:
-#      - main
-#    paths:
-#      - "query-service/**"
-#      - "core-service/**"
-#      - ".github/workflows/on-push-cards-query-service.yml"
-#
-#env:
-#  LOCALSTACK_VERSION: "3.7.0"
-#  AWS_REGION: "us-east-1"
-#  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-#  ECR_REPOSITORY: "cards/query-service"
-#  IMAGE_TAG: "latest"
-#
-#
-#jobs:
-#  build-and-test:
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - name: Checkout Source Code
-#        uses: actions/checkout@v3
-#
-#      - name: Set up JDK and Cache Maven Dependencies
-#        uses: actions/setup-java@v3
-#        with:
-#          distribution: 'corretto'
-#          java-version: 21
-#          cache: maven
-#
-#      - name: Build JAR with Maven (Only Modified Modules)
-#        run: |
-#          mvn clean package -pl query-service,core-service -am --batch-mode
-#
-#      - name: Configure AWS Credentials
-#        uses: aws-actions/configure-aws-credentials@v3
-#        with:
-#          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#          aws-region: ${{ env.AWS_REGION }}
-#
-#      - name: Log in to Amazon ECR (Private)
-#        run: |
-#          aws ecr get-login-password --region ${{ env.AWS_REGION }} \
-#            | docker login --username AWS --password-stdin ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
-#
-#      - name: Build, Tag, and Push the Docker Image to Private ECR
-#        run: |
-#          # Navigate to the directory containing your Dockerfile
-#          cd query-service
-#
-#          # Build the Docker image
-#          docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
-#
-#          # Tag it for the private ECR repository
-#          docker tag $ECR_REPOSITORY:$IMAGE_TAG \
-#            $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
-#
-#          # Push to Private ECR
-#          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
+name: On Push - Query Service Pipeline
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "query-service/**"
+      - "core-service/**"
+      - ".github/workflows/on-push-cards-query-service.yml"
+
+permissions:
+  id-token: write  # Required for OIDC authentication
+  contents: read   # Required for checking out the repo
+
+env:
+  AWS_REGION: "us-east-1"
+  ECR_REPOSITORY: "cards/query-service"
+  IMAGE_TAG: "latest"
+
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK and Cache Maven Dependencies
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: 21
+          cache: maven
+
+      - name: Build JAR with Maven (Only Modified Modules)
+        run: |
+          mvn clean package -pl query-service -am --batch-mode
+
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to Amazon ECR (Private)
+        run: |
+          aws ecr get-login-password --region ${{ env.AWS_REGION }} \
+            | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+
+      - name: Build, Tag, and Push the Docker Image to Private ECR
+        run: |
+          # Navigate to the directory containing your Dockerfile
+          cd query-service
+          
+          # Build the Docker image
+          docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
+          
+          # Tag it for the private ECR repository
+          docker tag $ECR_REPOSITORY:$IMAGE_TAG \
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
+          
+          # Push to Private ECR
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
