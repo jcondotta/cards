@@ -35,6 +35,12 @@ jobs:
         run: |
           mvn clean package -pl process-service -am --batch-mode
 
+      - name: Debug OIDC Token
+        run: |
+          echo "AWS OIDC Token URL: $ACTIONS_ID_TOKEN_REQUEST_URL"
+          curl -sH "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" $ACTIONS_ID_TOKEN_REQUEST_URL
+
+
       - name: Configure AWS credentials using OIDC
         uses: aws-actions/configure-aws-credentials@v2
         with:
