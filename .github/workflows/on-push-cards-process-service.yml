@@ -13,6 +13,10 @@ permissions:
   id-token: write  # Required for OIDC authentication
   contents: read   # Required for checking out the repo
 
+env:
+  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+  AWS_REGION: us-east-1
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -35,8 +39,8 @@ jobs:
       - name: Configure AWS credentials using OIDC
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          role-to-assume: arn:aws:iam::831926591127:role/github-actions-role
-          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::${{ env.AWS_ACCOUNT_ID }}:role/github-actions-role
+          aws-region: ${{ env.AWS_REGION }}
 
       - name: Upload Process Cards JAR to S3 bucket
         run: |

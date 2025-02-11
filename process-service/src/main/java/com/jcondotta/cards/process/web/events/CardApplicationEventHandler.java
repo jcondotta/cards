@@ -45,7 +45,7 @@ public class CardApplicationEventHandler extends MicronautRequestHandler<SQSEven
                 AddCardRequest addCardRequest = jsonMapper.readValue(message.getBody(), AddCardRequest.class);
 
                 logger.info("Received a card application event",
-                        StructuredArguments.keyValue("cardId", addCardRequest.bankAccountId()),
+                        StructuredArguments.keyValue("bankAccountId", addCardRequest.bankAccountId()),
                         StructuredArguments.keyValue("cardholderName", addCardRequest.cardholderName())
                 );
 

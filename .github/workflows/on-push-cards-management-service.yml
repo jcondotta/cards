@@ -10,12 +10,9 @@ on:
       - ".github/workflows/on-push-cards-management-service.yml"
 
 env:
-  LOCALSTACK_VERSION: "3.7.0"
   AWS_REGION: "us-east-1"
-  AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
   ECR_REPOSITORY: "cards/management-service"
   IMAGE_TAG: "latest"
-
 
 jobs:
   build-and-test:
@@ -34,19 +31,18 @@ jobs:
 
       - name: Build JAR with Maven (Only Modified Modules)
         run: |
-          mvn clean package -pl management-service,core-service -am --batch-mode
+          mvn clean package -pl management-service -am --batch-mode
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v3
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/github-actions-role
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Log in to Amazon ECR (Private)
         run: |
           aws ecr get-login-password --region ${{ env.AWS_REGION }} \
-            | docker login --username AWS --password-stdin ${{ env.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
+            | docker login --username AWS --password-stdin ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com
 
       - name: Build, Tag, and Push the Docker Image to Private ECR
         run: |
@@ -58,7 +54,7 @@ jobs:
           
           # Tag it for the private ECR repository
           docker tag $ECR_REPOSITORY:$IMAGE_TAG \
-            $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
+            ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
           
           # Push to Private ECR
-          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$IMAGE_TAG
