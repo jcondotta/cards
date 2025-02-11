@@ -5,7 +5,7 @@ micronaut:
   server:
     port: 8073
   graphql:
-    path: /query/graphql
+    path: /graphql
 
 
 aws:
