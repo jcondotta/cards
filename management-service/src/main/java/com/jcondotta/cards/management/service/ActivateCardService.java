@@ -3,6 +3,9 @@ package com.jcondotta.cards.management.service;
 import com.jcondotta.cards.core.domain.Card;
 import com.jcondotta.cards.core.domain.CardStatus;
 import com.jcondotta.cards.core.exception.ResourceNotFoundException;
+import com.jcondotta.cards.core.service.cache.BankAccountIdCacheKey;
+import com.jcondotta.cards.core.service.cache.CacheEvictionService;
+import com.jcondotta.cards.core.service.dto.CardsDTO;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.validation.constraints.NotNull;
@@ -21,10 +24,12 @@ public class ActivateCardService {
     private static final Logger LOGGER = LoggerFactory.getLogger(ActivateCardService.class);
 
     private final DynamoDbTable<Card> dynamoDbTable;
+    private final CacheEvictionService<CardsDTO> cacheEvictionService;
 
     @Inject
-    public ActivateCardService(DynamoDbTable<Card> dynamoDbTable) {
+    public ActivateCardService(DynamoDbTable<Card> dynamoDbTable, CacheEvictionService<CardsDTO> cacheEvictionService) {
         this.dynamoDbTable = dynamoDbTable;
+        this.cacheEvictionService = cacheEvictionService;
     }
 
     public void activateCard(@NotNull UUID cardId) {
@@ -52,5 +57,8 @@ public class ActivateCardService {
         LOGGER.info("Successfully activated card",
                 StructuredArguments.keyValue("cardId", cardId)
         );
+
+        var cacheKey = new BankAccountIdCacheKey(card.getBankAccountId());
+        cacheEvictionService.evictCacheEntry(cacheKey);
     }
 }

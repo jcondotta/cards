@@ -6,6 +6,11 @@ import com.jcondotta.cards.core.domain.CardStatus;
 import com.jcondotta.cards.core.factory.CardTestFactory;
 import com.jcondotta.cards.core.helper.TestBankAccount;
 import com.jcondotta.cards.core.helper.TestCardholder;
+import com.jcondotta.cards.core.service.cache.BankAccountIdCacheKey;
+import com.jcondotta.cards.core.service.cache.CacheEvictionService;
+import com.jcondotta.cards.core.service.cache.CardsCacheService;
+import com.jcondotta.cards.core.service.dto.CardDTO;
+import com.jcondotta.cards.core.service.dto.CardsDTO;
 import io.micronaut.context.MessageSource;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
@@ -36,6 +41,9 @@ class CancelCardControllerIT implements LocalStackTestContainer {
 
     @Inject
     private DynamoDbTable<Card> dynamoDbTable;
+
+    @Inject
+    private CardsCacheService<CardsDTO> cardsCacheService;
 
     @Inject
     private Clock testClockUTC;
@@ -76,6 +84,32 @@ class CancelCardControllerIT implements LocalStackTestContainer {
 
         var updatedCard = dynamoDbTable.getItem(card);
         assertThat(updatedCard.getCardStatus()).isEqualTo(CardStatus.CANCELLED);
+    }
+
+    @Test
+    void shouldEvictCacheKey_whenCardIsCancelled() {
+        var card = CardTestFactory.buildCard(BANK_ACCOUNT_ID_BRAZIL, CARDHOLDER_JEFFERSON);
+        dynamoDbTable.putItem(card);
+
+        var cardDTO = new CardDTO(card);
+        var bankAccountIdCacheKey = new BankAccountIdCacheKey(card.getBankAccountId());
+        cardsCacheService.setCacheEntry(bankAccountIdCacheKey, new CardsDTO(cardDTO));
+
+        assertThat(cardsCacheService.getCacheEntryValue(bankAccountIdCacheKey))
+                .isPresent()
+                .get()
+                .satisfies(cardsDTO -> assertThat(cardsDTO.cards()).hasSize(1));
+
+        given()
+            .spec(requestSpecification)
+            .pathParam("card-id", card.getCardId())
+        .when()
+            .patch("/cancellation")
+        .then()
+            .statusCode(HttpStatus.NO_CONTENT.getCode());
+
+        var cacheEntryValue = cardsCacheService.getCacheEntryValue(bankAccountIdCacheKey);
+        assertThat(cacheEntryValue).isEmpty();
     }
 
     @Test

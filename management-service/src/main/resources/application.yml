@@ -19,3 +19,13 @@ aws:
     queues:
       card-application-queue:
         name: ${AWS_SQS_CARD_APPLICATION_QUEUE_NAME}
+
+redis:
+  enabled: true
+  uri:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+  ssl: false
+  pool:
+    enabled: false
+    max-size: 10

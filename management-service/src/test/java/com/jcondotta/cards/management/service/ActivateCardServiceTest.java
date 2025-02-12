@@ -3,6 +3,11 @@ package com.jcondotta.cards.management.service;
 import com.jcondotta.cards.core.domain.Card;
 import com.jcondotta.cards.core.domain.CardStatus;
 import com.jcondotta.cards.core.exception.ResourceNotFoundException;
+import com.jcondotta.cards.core.helper.TestBankAccount;
+import com.jcondotta.cards.core.helper.TestCard;
+import com.jcondotta.cards.core.service.cache.BankAccountIdCacheKey;
+import com.jcondotta.cards.core.service.cache.CacheEvictionService;
+import com.jcondotta.cards.core.service.dto.CardsDTO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -29,18 +34,24 @@ class ActivateCardServiceTest {
     private DynamoDbTable<Card> dynamoDbTableMock;
 
     @Mock
+    private CacheEvictionService<CardsDTO> cacheEvictionService;
+
+    @Mock
     private Card cardMock;
 
-    private static final UUID CARD_ID = UUID.fromString("0d0c3534-1887-4a8d-9fe0-f25870813207");
+    private static final UUID CARD_ID_JEFFERSON = TestCard.JEFFERSON.getCardId();
+    private static final UUID BANK_ACCOUNT_ID_BRAZIL = TestBankAccount.BRAZIL.getBankAccountId();
 
     @Test
     public void shouldActivateCard_whenCardIdExists() {
         when(dynamoDbTableMock.getItem(any(Key.class))).thenReturn(cardMock);
+        when(cardMock.getBankAccountId()).thenReturn(BANK_ACCOUNT_ID_BRAZIL);
 
-        activateCardService.activateCard(CARD_ID);
+        activateCardService.activateCard(CARD_ID_JEFFERSON);
 
         verify(cardMock).setCardStatus(CardStatus.ACTIVE);
         verify(dynamoDbTableMock).putItem(cardMock);
+        verify(cacheEvictionService).evictCacheEntry(any(BankAccountIdCacheKey.class));
     }
 
     @Test
@@ -58,5 +69,6 @@ class ActivateCardServiceTest {
         );
 
         verify(dynamoDbTableMock, never()).putItem(any(Card.class));
+        verify(cacheEvictionService, never()).evictCacheEntry(any(BankAccountIdCacheKey.class));
     }
 }

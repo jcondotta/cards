@@ -43,7 +43,6 @@ class AddCardControllerIT implements LocalStackTestContainer {
 
     @Value("${aws.sqs.queues.card-application-queue.name}")
     private String cardApplicationQueueName;
-
     private String cardApplicationQueueURL;
 
     @Inject
@@ -88,7 +87,7 @@ class AddCardControllerIT implements LocalStackTestContainer {
             var receiveMessageResponse = sqsClient.receiveMessage(builder -> builder.queueUrl(cardApplicationQueueURL).build());
             assertThat(receiveMessageResponse.messages().size()).isEqualTo(1);
 
-            var message = receiveMessageResponse.messages().get(0);
+            var message = receiveMessageResponse.messages().getFirst();
             var messageAddCardRequest = jsonMapper.readValue(message.body(), AddCardRequest.class);
 
             assertThat(messageAddCardRequest.bankAccountId()).isEqualTo(addCardRequest.bankAccountId());
