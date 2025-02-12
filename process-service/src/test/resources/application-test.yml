@@ -15,7 +15,9 @@ aws:
       card-application-dead-letter-queue:
         name: 'card-application-dlq-test'
 
-
 redis:
   enabled: true
   ssl: false
+  cache:
+    cards:
+      ttl-in-seconds: ${REDIS_TTL_IN_SECONDS:3600}
