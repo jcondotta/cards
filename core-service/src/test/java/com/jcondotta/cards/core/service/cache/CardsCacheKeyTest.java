@@ -1,14 +1,5 @@
 package com.jcondotta.cards.core.service.cache;
 
-import com.jcondotta.cards.core.helper.TestCard;
-import org.junit.jupiter.api.Test;
-
-import java.util.StringJoiner;
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 class CardsCacheKeyTest {
 
 //    private static final UUID CARD_ID_JEFFERSON = TestCard.JEFFERSON.getCardId();

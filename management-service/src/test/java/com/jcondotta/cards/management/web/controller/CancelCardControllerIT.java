@@ -7,7 +7,6 @@ import com.jcondotta.cards.core.factory.CardTestFactory;
 import com.jcondotta.cards.core.helper.TestBankAccount;
 import com.jcondotta.cards.core.helper.TestCardholder;
 import com.jcondotta.cards.core.service.cache.BankAccountIdCacheKey;
-import com.jcondotta.cards.core.service.cache.CacheEvictionService;
 import com.jcondotta.cards.core.service.cache.CardsCacheService;
 import com.jcondotta.cards.core.service.dto.CardDTO;
 import com.jcondotta.cards.core.service.dto.CardsDTO;

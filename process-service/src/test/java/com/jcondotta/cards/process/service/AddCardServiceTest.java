@@ -8,7 +8,6 @@ import com.jcondotta.cards.core.helper.TestCardholder;
 import com.jcondotta.cards.core.request.AddCardRequest;
 import com.jcondotta.cards.core.service.cache.BankAccountIdCacheKey;
 import com.jcondotta.cards.core.service.cache.CacheEvictionService;
-import com.jcondotta.cards.core.service.dto.CardDTO;
 import com.jcondotta.cards.core.service.dto.CardsDTO;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;

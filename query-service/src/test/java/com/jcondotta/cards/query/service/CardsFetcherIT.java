@@ -5,7 +5,6 @@ import com.jcondotta.cards.core.domain.Card;
 import com.jcondotta.cards.core.factory.CardTestFactory;
 import com.jcondotta.cards.core.helper.TestBankAccount;
 import com.jcondotta.cards.core.helper.TestCardholder;
-import com.jcondotta.cards.core.request.AddCardRequest;
 import com.jcondotta.cards.core.service.cache.BankAccountIdCacheKey;
 import com.jcondotta.cards.core.service.cache.CardsCacheService;
 import com.jcondotta.cards.core.service.dto.CardsDTO;
@@ -22,14 +21,12 @@ import org.junit.jupiter.api.TestInstance;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 
 import java.time.Clock;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @MicronautTest(transactional = false)

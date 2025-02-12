@@ -3,7 +3,6 @@ package com.jcondotta.cards.query.service;
 import com.jcondotta.cards.core.domain.Card;
 import com.jcondotta.cards.core.service.cache.BankAccountIdCacheKey;
 import com.jcondotta.cards.core.service.cache.CardsCacheService;
-import com.jcondotta.cards.core.service.cache.WriteAsyncCacheService;
 import com.jcondotta.cards.core.service.dto.CardDTO;
 import com.jcondotta.cards.core.service.dto.CardsDTO;
 import graphql.GraphQLException;
