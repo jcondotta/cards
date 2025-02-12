@@ -36,7 +36,9 @@ module "caching" {
   cache_cluster_name = "cards-cache-${var.environment}"
   subnet_ids         = module.networking.private_subnet_ids
   security_group_ids = [
-    module.cards_process_service_lambda.process_cards_lambda_security_group_id
+    module.cards_process_service_lambda.process_cards_lambda_security_group_id,
+    module.ecs_management_service.ecs_task_security_group_id,
+    module.ecs_query_service.ecs_task_security_group_id
   ]
 }
 
