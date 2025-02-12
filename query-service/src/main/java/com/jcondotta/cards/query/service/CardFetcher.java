@@ -1,7 +1,7 @@
 package com.jcondotta.cards.query.service;
 
 import com.jcondotta.cards.core.domain.Card;
-import com.jcondotta.cards.query.service.dto.CardDTO;
+import com.jcondotta.cards.core.service.dto.CardDTO;
 import graphql.GraphQLException;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;

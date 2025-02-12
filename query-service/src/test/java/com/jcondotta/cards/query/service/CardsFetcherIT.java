@@ -5,6 +5,10 @@ import com.jcondotta.cards.core.domain.Card;
 import com.jcondotta.cards.core.factory.CardTestFactory;
 import com.jcondotta.cards.core.helper.TestBankAccount;
 import com.jcondotta.cards.core.helper.TestCardholder;
+import com.jcondotta.cards.core.request.AddCardRequest;
+import com.jcondotta.cards.core.service.cache.BankAccountIdCacheKey;
+import com.jcondotta.cards.core.service.cache.CardsCacheService;
+import com.jcondotta.cards.core.service.dto.CardsDTO;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.test.extensions.junit5.annotation.MicronautTest;
 import io.restassured.RestAssured;
@@ -18,11 +22,14 @@ import org.junit.jupiter.api.TestInstance;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 
 import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @MicronautTest(transactional = false)
@@ -30,6 +37,9 @@ class CardsFetcherIT implements LocalStackTestContainer {
 
     @Inject
     private DynamoDbTable<Card> dynamoDbTable;
+
+    @Inject
+    private CardsCacheService<CardsDTO> cardsCacheService;
 
     @Inject
     private Clock testClockUTC;
@@ -82,5 +92,32 @@ class CardsFetcherIT implements LocalStackTestContainer {
                 .body("cards[0].cardholderName", equalTo(card1.getCardholderName()))
                 .body("cards[0].cardNumber", equalTo(card1.getCardNumber()))
                 .body("cards[0].cardStatus", equalTo(card1.getCardStatus().toString()));
+
+        var cacheKey = new BankAccountIdCacheKey(BANK_ACCOUNT_ID_BRAZIL);
+        var cacheEntryValue = cardsCacheService.getCacheEntryValue(cacheKey);
+
+        assertThat(cacheEntryValue)
+                .isPresent()
+                .get()
+                .satisfies(cardsDTO -> {
+                    // Validate count
+                    assertThat(cardsDTO.count()).isEqualTo(1);
+                    assertThat(cardsDTO.lastEvaluatedKey()).isNull();
+
+                    assertThat(cardsDTO.cards())
+                            .hasSize(1)
+                            .first()
+                            .satisfies(cardDTO -> {
+                                assertThat(cardDTO.cardId()).isEqualTo(card1.getCardId());
+                                assertThat(cardDTO.bankAccountId()).isEqualTo(card1.getBankAccountId());
+                                assertThat(cardDTO.cardholderName()).isEqualTo(card1.getCardholderName());
+                                assertThat(cardDTO.cardNumber()).isEqualTo(card1.getCardNumber());
+                                assertThat(cardDTO.cardStatus()).isEqualTo(card1.getCardStatus());
+                                assertThat(cardDTO.dailyWithdrawalLimit()).isEqualTo(card1.getDailyWithdrawalLimit());
+//                                assertThat(cardDTO.dailyPaymentLimit()).isEqualTo(card1.getDailyPaymentLimit());
+//                                assertThat(cardDTO.createdAt()).isEqualTo(card1.getCreatedAt());
+//                                assertThat(cardDTO.expirationDate()).isEqualTo(card1.getExpirationDate());
+                            });
+                });
     }
 }

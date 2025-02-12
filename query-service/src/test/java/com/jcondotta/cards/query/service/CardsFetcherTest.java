@@ -4,7 +4,10 @@ import com.jcondotta.cards.core.argument_provider.BlankAndNonPrintableCharacters
 import com.jcondotta.cards.core.domain.Card;
 import com.jcondotta.cards.core.factory.CardTestFactory;
 import com.jcondotta.cards.core.helper.TestBankAccount;
-import com.jcondotta.cards.query.service.dto.CardDTO;
+import com.jcondotta.cards.core.service.cache.BankAccountIdCacheKey;
+import com.jcondotta.cards.core.service.cache.WriteAsyncCacheService;
+import com.jcondotta.cards.core.service.dto.CardDTO;
+import com.jcondotta.cards.core.service.dto.CardsDTO;
 import graphql.GraphQLException;
 import graphql.schema.DataFetchingEnvironment;
 import org.junit.jupiter.api.Test;
@@ -15,6 +18,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.awssdk.core.pagination.sync.SdkIterable;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
@@ -42,6 +46,9 @@ class CardsFetcherTest {
     private DynamoDbIndex<Card> dynamoDbIndexMock;
 
     @Mock
+    private WriteAsyncCacheService<CardsDTO> writeAsyncCacheService;
+
+    @Mock
     private SdkIterable<Page<Card>> sdkIterableMock;
 
     @Mock
@@ -63,8 +70,8 @@ class CardsFetcherTest {
                         Page.builder(Card.class).items(List.of(card)).build())
                 );
 
-        var cardDTOS = cardsFetcher.get(fetchingEnvironmentMock);
-        assertThat(cardDTOS)
+        var cardDTOs = cardsFetcher.get(fetchingEnvironmentMock);
+        assertThat(cardDTOs)
                 .first()
                 .satisfies(cardDTO -> assertAll(
                         () -> assertThat(cardDTO.cardId()).isEqualTo(card.getCardId()),
@@ -79,6 +86,10 @@ class CardsFetcherTest {
                 ));
 
         verify(dynamoDbIndexMock).query(any(QueryEnhancedRequest.class));
+
+        var cacheKey = new BankAccountIdCacheKey(BANK_ACCOUNT_ID_BRAZIL);
+        var cardsDTO = new CardsDTO(cardDTOs);
+        verify(writeAsyncCacheService).setCacheEntry(eq(cacheKey), eq(cardsDTO));
     }
 
     @Test
@@ -92,6 +103,7 @@ class CardsFetcherTest {
         assertThat(cardDTOS).hasSize(0);
 
         verify(dynamoDbIndexMock).query(any(QueryEnhancedRequest.class));
+        verify(writeAsyncCacheService).setCacheEntry(any(BankAccountIdCacheKey.class), any(CardsDTO.class));
     }
 
     @ParameterizedTest
@@ -103,5 +115,6 @@ class CardsFetcherTest {
         assertThat(exception.getMessage()).isEqualTo("card.bankAccountId.notBlank");
 
         verify(dynamoDbIndexMock, never()).query(any(QueryEnhancedRequest.class));
+        verify(writeAsyncCacheService, never()).setCacheEntry(any(BankAccountIdCacheKey.class), any(CardsDTO.class));
     }
 }

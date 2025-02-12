@@ -1,7 +1,10 @@
 package com.jcondotta.cards.query.service;
 
 import com.jcondotta.cards.core.domain.Card;
-import com.jcondotta.cards.query.service.dto.CardDTO;
+import com.jcondotta.cards.core.service.cache.BankAccountIdCacheKey;
+import com.jcondotta.cards.core.service.cache.WriteAsyncCacheService;
+import com.jcondotta.cards.core.service.dto.CardDTO;
+import com.jcondotta.cards.core.service.dto.CardsDTO;
 import graphql.GraphQLException;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
@@ -26,10 +29,12 @@ public class CardsFetcher implements DataFetcher<List<CardDTO>> {
     private static final Logger LOGGER = LoggerFactory.getLogger(CardsFetcher.class);
 
     private final DynamoDbIndex<Card> dynamoDbIndex;
+    private final WriteAsyncCacheService<CardsDTO> writeAsyncCacheService;
 
     @Inject
-    public CardsFetcher(DynamoDbIndex<Card> dynamoDbIndex) {
+    public CardsFetcher(DynamoDbIndex<Card> dynamoDbIndex, WriteAsyncCacheService<CardsDTO> writeAsyncCacheService) {
         this.dynamoDbIndex = dynamoDbIndex;
+        this.writeAsyncCacheService = writeAsyncCacheService;
     }
 
     @Override
@@ -74,6 +79,9 @@ public class CardsFetcher implements DataFetcher<List<CardDTO>> {
                 StructuredArguments.keyValue("bankAccountId", bankAccountId),
                 StructuredArguments.keyValue("totalCards", cards.size())
         );
+
+        var cacheKey = new BankAccountIdCacheKey(UUID.fromString(bankAccountId));
+        writeAsyncCacheService.setCacheEntry(cacheKey, new CardsDTO(cards));
 
         return cards;
     }
