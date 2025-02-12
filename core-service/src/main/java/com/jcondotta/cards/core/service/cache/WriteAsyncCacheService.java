@@ -30,11 +30,6 @@ public class WriteAsyncCacheService<V> {
         Objects.requireNonNull(cacheKey, "Cache key cannot be null");
         Objects.requireNonNull(cacheValue, "Cache value cannot be null");
 
-        LOGGER.info("Setting cache entry",
-                StructuredArguments.keyValue("cacheKey", cacheKey.getKey()),
-                StructuredArguments.keyValue("ttlSeconds", timeToLiveInSeconds)
-        );
-
         redisAsyncCommands.setex(cacheKey.getKey(), timeToLiveInSeconds, cacheValue)
                 .whenComplete((result, throwable) -> {
 

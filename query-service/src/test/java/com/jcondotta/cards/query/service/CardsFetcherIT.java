@@ -114,9 +114,6 @@ class CardsFetcherIT implements LocalStackTestContainer {
                                 assertThat(cardDTO.cardNumber()).isEqualTo(card1.getCardNumber());
                                 assertThat(cardDTO.cardStatus()).isEqualTo(card1.getCardStatus());
                                 assertThat(cardDTO.dailyWithdrawalLimit()).isEqualTo(card1.getDailyWithdrawalLimit());
-//                                assertThat(cardDTO.dailyPaymentLimit()).isEqualTo(card1.getDailyPaymentLimit());
-//                                assertThat(cardDTO.createdAt()).isEqualTo(card1.getCreatedAt());
-//                                assertThat(cardDTO.expirationDate()).isEqualTo(card1.getExpirationDate());
                             });
                 });
     }

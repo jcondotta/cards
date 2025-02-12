@@ -2,6 +2,7 @@ package com.jcondotta.cards.query.service;
 
 import com.jcondotta.cards.core.domain.Card;
 import com.jcondotta.cards.core.service.cache.BankAccountIdCacheKey;
+import com.jcondotta.cards.core.service.cache.CardsCacheService;
 import com.jcondotta.cards.core.service.cache.WriteAsyncCacheService;
 import com.jcondotta.cards.core.service.dto.CardDTO;
 import com.jcondotta.cards.core.service.dto.CardsDTO;
@@ -19,7 +20,9 @@ import software.amazon.awssdk.enhanced.dynamodb.model.Page;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -29,12 +32,12 @@ public class CardsFetcher implements DataFetcher<List<CardDTO>> {
     private static final Logger LOGGER = LoggerFactory.getLogger(CardsFetcher.class);
 
     private final DynamoDbIndex<Card> dynamoDbIndex;
-    private final WriteAsyncCacheService<CardsDTO> writeAsyncCacheService;
+    private final CardsCacheService<CardsDTO> cardsCacheService;
 
     @Inject
-    public CardsFetcher(DynamoDbIndex<Card> dynamoDbIndex, WriteAsyncCacheService<CardsDTO> writeAsyncCacheService) {
+    public CardsFetcher(DynamoDbIndex<Card> dynamoDbIndex, CardsCacheService<CardsDTO> cardsCacheService) {
         this.dynamoDbIndex = dynamoDbIndex;
-        this.writeAsyncCacheService = writeAsyncCacheService;
+        this.cardsCacheService = cardsCacheService;
     }
 
     @Override
@@ -54,6 +57,12 @@ public class CardsFetcher implements DataFetcher<List<CardDTO>> {
                     e
             );
             throw new GraphQLException("Invalid bank account ID format", e);
+        }
+
+        var cacheKey = new BankAccountIdCacheKey(UUID.fromString(bankAccountId));
+        Optional<CardsDTO> cacheEntryValue = cardsCacheService.getCacheEntryValue(cacheKey);
+        if (cacheEntryValue.isPresent()) {
+            return new ArrayList<>(cacheEntryValue.get().cards());
         }
 
         LOGGER.info("Fetching cards for bank account",
@@ -80,8 +89,7 @@ public class CardsFetcher implements DataFetcher<List<CardDTO>> {
                 StructuredArguments.keyValue("totalCards", cards.size())
         );
 
-        var cacheKey = new BankAccountIdCacheKey(UUID.fromString(bankAccountId));
-        writeAsyncCacheService.setCacheEntry(cacheKey, new CardsDTO(cards));
+        cardsCacheService.setCacheEntry(cacheKey, new CardsDTO(cards));
 
         return cards;
     }

@@ -5,6 +5,7 @@ import com.jcondotta.cards.core.domain.Card;
 import com.jcondotta.cards.core.factory.CardTestFactory;
 import com.jcondotta.cards.core.helper.TestBankAccount;
 import com.jcondotta.cards.core.service.cache.BankAccountIdCacheKey;
+import com.jcondotta.cards.core.service.cache.CardsCacheService;
 import com.jcondotta.cards.core.service.cache.WriteAsyncCacheService;
 import com.jcondotta.cards.core.service.dto.CardDTO;
 import com.jcondotta.cards.core.service.dto.CardsDTO;
@@ -46,7 +47,7 @@ class CardsFetcherTest {
     private DynamoDbIndex<Card> dynamoDbIndexMock;
 
     @Mock
-    private WriteAsyncCacheService<CardsDTO> writeAsyncCacheService;
+    private CardsCacheService<CardsDTO> cardsCacheService;
 
     @Mock
     private SdkIterable<Page<Card>> sdkIterableMock;
@@ -89,7 +90,7 @@ class CardsFetcherTest {
 
         var cacheKey = new BankAccountIdCacheKey(BANK_ACCOUNT_ID_BRAZIL);
         var cardsDTO = new CardsDTO(cardDTOs);
-        verify(writeAsyncCacheService).setCacheEntry(eq(cacheKey), eq(cardsDTO));
+        verify(cardsCacheService).setCacheEntry(eq(cacheKey), eq(cardsDTO));
     }
 
     @Test
@@ -103,7 +104,7 @@ class CardsFetcherTest {
         assertThat(cardDTOS).hasSize(0);
 
         verify(dynamoDbIndexMock).query(any(QueryEnhancedRequest.class));
-        verify(writeAsyncCacheService).setCacheEntry(any(BankAccountIdCacheKey.class), any(CardsDTO.class));
+        verify(cardsCacheService).setCacheEntry(any(BankAccountIdCacheKey.class), any(CardsDTO.class));
     }
 
     @ParameterizedTest
@@ -115,6 +116,6 @@ class CardsFetcherTest {
         assertThat(exception.getMessage()).isEqualTo("card.bankAccountId.notBlank");
 
         verify(dynamoDbIndexMock, never()).query(any(QueryEnhancedRequest.class));
-        verify(writeAsyncCacheService, never()).setCacheEntry(any(BankAccountIdCacheKey.class), any(CardsDTO.class));
+        verify(cardsCacheService, never()).setCacheEntry(any(BankAccountIdCacheKey.class), any(CardsDTO.class));
     }
 }
