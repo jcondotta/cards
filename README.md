@@ -13,11 +13,11 @@ This project is part of a microservice architecture responsible for managing car
 ### Infrastructure:
 
 - **Amazon DynamoDB**: NoSQL database used for storing card information.
-- **AWS Lambda**: Serverless compute platform for running the process-cards-service. It handles event-driven tasks, such as processing card-related operations from Amazon SQS, without the need to manage underlying servers.
-- **Amazon ECS Fargate**: A fully managed container orchestration service used to run the manage-cards-service container. It allows for secure and scalable execution of containers without managing underlying infrastructure, running in private subnets for improved security.
-- **Amazon EC2 Instance**: Virtual machines used to run the query-cards-service.jar in a private subnet, providing flexibility and control over compute resources.
-- **Application Load Balancer (ALB)**: A managed load balancer used to distribute incoming HTTP/HTTPS traffic from the internet to backend services (ECS tasks and EC2 instances). It resides in public subnets and ensures high availability and scalability.
-- **Terraform**: Infrastructure as Code (IaC) tool used for managing AWS resources like DynamoDB, Lambda, API Gateway, ECS, ALB, and EC2 instances.
+- **AWS Lambda**: Serverless compute platform for running the process-service. It handles event-driven tasks, such as processing card-related operations from Amazon SQS, without the need to manage underlying servers.
+- **Amazon ECS Fargate**: A fully managed container orchestration service used to run the management-service and query-service containers. It allows for secure and scalable execution of containers without managing underlying infrastructure, running in private subnets for improved security.
+- **Application Load Balancer (ALB)**: Traffic routing between clients and backend services (ECS, EC2), ensuring high availability.
+- **Amazon ElastiCache for Valkey**: Distributed caching for low-latency card retrieval.
+- **Terraform**: Infrastructure as Code (IaC) tool used for managing AWS resources like DynamoDB, Lambda, API Gateway, ECS, ALB and ElastiCache.
 - **LocalStack**: A fully functional local AWS cloud stack used for local testing of AWS services like DynamoDB, Lambda, and ECS.
 
 ### Authentication:
@@ -28,7 +28,7 @@ This project is part of a microservice architecture responsible for managing car
 
 - **GitHub Actions:** Automated pipeline for building, testing, and deploying the microservice.
 - **Docker:** Used to containerize the application for local development and deployment.
-- **Amazon ECR (Elastic Container Registry)**: A fully managed container registry used to store and manage Docker images securely. The project’s Docker images are pushed to ECR, allowing seamless integration with ECS Fargate for deployment and scaling.
+- **Amazon ECR (Elastic Container Registry)**: Secure container registry for storing and managing Docker images, integrated with ECS Fargate.
 
 ### Testing:
 
@@ -43,10 +43,15 @@ This project is part of a microservice architecture responsible for managing car
 
 ## Features
 
-- **Card Management**: Create, fetch, update, and delete cards linked to a bank account. The query-cards-service uses GraphQL to enable flexible and efficient querying, allowing clients to request exactly the data they need.
-- **Infrastructure as Code:** AWS infrastructure is managed and deployed using Terraform.
-- **Local Testing:** Fully local development setup using JUnit 5, Mockito, AssertJ, LocalStack and TestContainers.
+- **Card Management API**: Create, fetch, update, and delete cards linked to a bank account.
+- **GraphQL Support**: card-query-service enables efficient querying with customized responses.
+- **Event-Driven Processing**: cards-process-service (AWS Lambda) handles SQS messages for asynchronous card updates.
+- **Distributed Caching**: ElastiCache for Valkey improves read performance.
+- **Resilient Message Handling**: SQS DLQ for failed messages, with CloudWatch alerts for investigation.
+- **Infrastructure as Code:** Full AWS deployment automation with Terraform.
+- **Local Testing:** JUnit 5, Mockito, AssertJ, LocalStack, and TestContainers ensure robust local development.
 - **CI/CD Pipeline:** GitHub Actions for continuous integration and deployment.
+- **Secure, Scalable Deployment:** Services run on ECS Fargate (private subnets) with ALB for load balancing.
 
 ## Project Architecture
 
