@@ -94,6 +94,8 @@ module "ecs_management_service" {
     "AWS_DEFAULT_REGION"                  = var.aws_region
     "AWS_DYNAMODB_CARDS_TABLE_NAME"       = module.dynamodb.cards_table_name,
     "AWS_SQS_CARD_APPLICATION_QUEUE_NAME" = module.sqs.card_application_queue_name,
+    "REDIS_HOST"                          = module.caching.redis_host,
+    "REDIS_PORT"                          = module.caching.redis_port,
   }
 }
 
@@ -121,6 +123,8 @@ module "ecs_query_service" {
     "AWS_DEFAULT_REGION"                  = var.aws_region
     "AWS_DYNAMODB_CARDS_TABLE_NAME"       = module.dynamodb.cards_table_name,
     "AWS_DYNAMODB_CARDS_BY_BANK_ACCOUNT_ID_GSI_NAME" = module.dynamodb.cards_by_bank_account_id_gsi_name,
+    "REDIS_HOST"                          = module.caching.redis_host,
+    "REDIS_PORT"                          = module.caching.redis_port,
   }
 }
 
